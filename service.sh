@@ -3,10 +3,6 @@ MODDIR=/data/adb/modules/susfs4ksu
 
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 
-HOST_FILE=/system/etc/hosts
-
-HOST_HASH=$(md5sum "$HOST_FILE" | cut -d' ' -f1)
-
 source ${MODDIR}/utils.sh
 
 ## sus_su ##
@@ -44,5 +40,3 @@ enable_sus_su(){
 sleep 1s
 ${SUSFS_BIN} add_sus_mount /system/etc
 ${SUSFS_BIN} add_try_umount /system/etc 1
-${SUSFS_BIN} add_sus_mount /system/etc/hosts
-${SUSFS_BIN} add_try_umount /system/etc/hosts 1
