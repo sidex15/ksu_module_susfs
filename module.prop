@@ -4,4 +4,4 @@ version=v1.4.2-R2
 versionCode=10400202
 author=sidex15 & simonpunk
 description=An addon root hiding service for KernelSU compiled with patched kernel source.
-updateJson=https://raw.githubusercontent.com/sidex15/ksu_module_susfs/update.json
+updateJson=https://raw.githubusercontent.com/sidex15/ksu_module_susfs/main/update.json
