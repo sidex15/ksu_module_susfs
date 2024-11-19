@@ -34,7 +34,10 @@ if [ -z "$prop_value" ]; then
 	ui_print "! And Paste it to /data/adb/VerifiedBootHash/VerifiedBootHash.txt"
 	ui_print "*********************************************************"
 else
-    ui_print "Property ro.boot.vbmeta.digest has a value, skipping VerifiedBootHash creation"
+    ui_print "*********************************************************"
+	ui_print "! Property ro.boot.vbmeta.digest has a value"
+    ui_print "! skipping VerifiedBootHash creation"
+	ui_print "*********************************************************"
 fi
 
 
