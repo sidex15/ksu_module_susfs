@@ -12,8 +12,10 @@ enable_sus_su(){
         SYSTEM_OL=${MODDIR}/overlay
         rm -rf ${SYSTEM_OL}  2>/dev/null
         mkdir -p ${SYSTEM_OL}/system_bin 2>/dev/null
-        ## Enable sus_su ##
-        ${SUSFS_BIN} sus_su 1
+         ## Enable sus_su or abort the function if sus_su is not supported ##
+        if ! ${SUSFS_BIN} sus_su 1; then
+        return
+        fi
         ## Copy the new generated sus_su_drv_path and 'sus_su' to /system/bin/ and rename 'sus_su' to 'su' ##
         cp -f /data/adb/ksu/bin/sus_su ${SYSTEM_OL}/system_bin/su
         cp -f /data/adb/ksu/bin/sus_su_drv_path ${SYSTEM_OL}/system_bin/sus_su_drv_path
