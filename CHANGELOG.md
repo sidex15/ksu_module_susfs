@@ -1,3 +1,9 @@
+## v1.4.2 Revision 5
+* Hide sus loopdev paths to fix Holmes 1.5.x futile hide (thanks simon punk and @backslashxx)
+* Hide system_ext (thanks @rifsxd)
+* Add status description if susfs is implemented in the kernel
+* sus_su will not mount/installed if sus_su is not supported/turned on in the kernel
+
 ## v1.4.2 Revision 4
 * Revert props command from susfs_hexpatch_props to resetprop
 
