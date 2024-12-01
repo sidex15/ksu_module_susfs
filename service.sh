@@ -20,7 +20,7 @@ enable_sus_su(){
         cp -f /data/adb/ksu/bin/sus_su ${SYSTEM_OL}/system_bin/su
         cp -f /data/adb/ksu/bin/sus_su_drv_path ${SYSTEM_OL}/system_bin/sus_su_drv_path
 		## Generate sus_su_enabled flag ##
-		touch ${MODDIR}/sus_su_enabled
+		echo 1 > ${MODDIR}/sus_su_enabled
         ## Setup permission ##
         susfs_clone_perm ${SYSTEM_OL}/system_bin /system/bin
         susfs_clone_perm ${SYSTEM_OL}/system_bin/su /system/bin/sh
