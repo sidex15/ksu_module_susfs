@@ -22,8 +22,4 @@ for i in $(grep "dex2oa" /proc/mounts | cut -f2 -d " "); do
 	${SUSFS_BIN} add_sus_mount $i && echo "susfs4ksu/post-fs-data: adding sus_mount $i" >> $logfile
 done
 
-# no idea if helpful but lets abuse this new feature
-sed 's|androidboot.verifiedbootstate=orange|androidboot.verifiedbootstate=green|g' /proc/cmdline > /debug_ramdisk/susfs4ksu/cmdline
-${SUSFS_BIN} set_proc_cmdline /debug_ramdisk/susfs4ksu/cmdline
-
 # EOF

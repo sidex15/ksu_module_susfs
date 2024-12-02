@@ -48,6 +48,15 @@ hide_revanced=0
 	for i in $packages ; do hide_app $i ; done 
 }
 
+# echo "spoof_cmdline=1" >> /data/adb/susfs4ksu/config.sh
+[ $spoof_cmdline = 1 ] && {
+	echo "susfs4ksu/boot-completed: spoof_cmdline" >> $logfile
+	sed 's|androidboot.verifiedbootstate=orange|androidboot.verifiedbootstate=green|g' /proc/cmdline > /debug_ramdisk/susfs4ksu/cmdline
+	${SUSFS_BIN} set_proc_cmdline /debug_ramdisk/susfs4ksu/cmdline
+}
+
+###########
+
 if dmesg | grep -q "susfs:"; then
 	description="description=status: ✅ SuS ඞ "
 else
