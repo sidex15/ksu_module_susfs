@@ -37,6 +37,18 @@ enable_sus_su(){
 ## Uncomment this if you are using kprobe hooks ksu, make sure CONFIG_KSU_SUSFS_SUS_SU config is enabled when compiling kernel ##
 enable_sus_su
 
+if_sus_su_disabled(){
+  if grep -q '#enable_sus_su' $MODDIR/service.sh; then
+    if ! ${SUSFS_BIN} sus_su 0; then
+      return
+    fi
+    echo 0 > ${MODDIR}/sus_su_enabled
+  fi
+}
+
+## Check if enable_sus_su is disabled but sus_su is supported"
+if_sus_su_disabled
+
 ## Disable susfs kernel log ##
 ${SUSFS_BIN} enable_log 1
 
