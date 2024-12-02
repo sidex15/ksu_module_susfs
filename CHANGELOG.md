@@ -1,3 +1,16 @@
+## v1.4.2 Revision 8
+* Introducing SUSFS WebUI 1.4.2
+  * SUSFS Logs toggle
+  * SUS SU toggle
+  * SUS SU on boot toggle
+  * Spoof Kernel Version
+* Move addon.d and install-recovery.sh sus_path to post-fs-data.sh
+* Remove comment on susfs enable log and make susfslogs.txt
+* Change to 'susfs:' string on susfs detection
+
+If you have a kernel patched to susfs 1.5.2 download the 1.5.2 version here
+[Download](https://github.com/sidex15/ksu_module_susfs/releases/latest/download/ksu_module_susfs_1.5.2.zip)
+
 ## v1.4.2 Revision 7
 * Hide lineage vendor sepolicy traces (thanks @backslashxx)
 * Hide Custom ROM related paths
