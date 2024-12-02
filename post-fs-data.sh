@@ -6,6 +6,8 @@ tmpfolder=/debug_ramdisk/susfs4ksu
 mkdir -p $tmpfolder/logs
 logfile="$tmpfolder/logs/susfs.log"
 
+dmesg | grep -q "susfs_init" > /dev/null && touch $tmpfolder/logs/susfs_active
+
 echo "susfs4ksu/post-fs-data: logging started" > $logfile
 
 # to add paths
