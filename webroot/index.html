@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+  <script type="module" crossorigin src="/assets/fade-B36w67cd.js"></script>
+  <script type="module" crossorigin src="/assets/index-fyWwrX9d.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-9U8G3RaN.css">
+</head>
+
+<style>
+	div,p{
+		z-index: 40;	
+	}
+</style>
+
+<body class="bg-black font-amongus">
+	<canvas id="backgroundCanvas" class="absolute inset-0 z-0 max-h-screen bg-black"></canvas>
+	<!--<div class="z-50 toast toast-top toast-center">
+		<div id="toast" class="alert alert-error bg-red-500 font-bold text-black font-sans opacity-100 duration-300">
+			<span>Spaces are not allowed in the input!</span>
+		  </div>
+	</div>-->
+	<main class="max-h-screen relative overflow-auto text-base" data-router-wrapper>
+		<div data-router-view="home">
+			<div class="flex justify-between items-center mx-auto ml-4 pt-4 mr-4">
+				<div class="flex flex-col">
+					<h1 class="font-bold text-6xl text-white">SUSFS A</h1>
+					<h3 class="text-3xl text-balance text-white">WebUI menu</h3>
+					<h4 id="susfs_version" class="text-xl text-balance text-white font-amongus2"></h4>
+				</div>
+				<div>
+					<a href="credits.html" class="text-white"><button class="btn btn-outline text-xl border-white mt-2">about</button></a>
+				</div>
+			</div>
+			<section class="flex flex-col justify-start items-center min-h-fit ml-4 mr-4">
+				<div class="stats stats-horizontal border-2 border-white divide-white bg-black/50 lg:stats-horizontal mt-6">
+					<div class="stat">
+					  <div class="stat-title text-white text-2xl text-ellipsis lowercase">SUS PATH</div>
+					  <div class="stat-value text-white text-xl text-ellipsis overflow-hidden text-center" id="sus_path"></div>
+					</div>
+				  
+					<div class="stat">
+					  <div class="stat-title text-white text-2xl text-ellipsis lowercase">SUS MOUNT</div>
+					  <div class="stat-value text-white text-xl text-ellipsis overflow-hidden text-center" id="sus_mount"></div>
+					</div>
+				  
+					<div class="stat">
+					  <div class="stat-title text-white text-2xl text-ellipsis lowercase">TRY UMOUNT</div>
+					  <div class="stat-value text-white text-xl text-ellipsis overflow-hidden text-center" id="try_umount"></div>
+					</div>
+				  </div>
+				  <div class="stats flex flex-col bg-black/50 mt-5 border-2 border-white">
+					<div class="stat">
+						<div class="w-[16.6rem]">
+							<div class="form-control">
+							  <label class="label cursor-pointer">
+								<span class="text-white text-2xl">SUSFS Logs</span>
+								<input type="checkbox" id="susfs_log" class="toggle toggle-primary" checked="checked" />
+							  </label>
+							</div>
+							<div id="sus_su_NOS" class="form-control hidden">
+								<label class="label cursor-pointer">
+								  <span class="text-white text-lg">SUS SU is not supported in your kernel</span>
+								  <svg class="w-6 h-6 text-gray-800 dark:text-red-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 9-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+								  </svg>									  
+								</label>
+							</div>
+							<!--this one is for 1.4.2-->
+							<div id="sus_su_142" class="hidden">
+								<div class="form-control">
+								<label class="label cursor-pointer">
+									<span class="text-white text-2xl">SUS SU</span>
+									<input type="checkbox" id="sus_su" class="toggle toggle-secondary" checked="checked" />
+								</label>
+								</div>
+								<div class="form-control">
+									<label class="label cursor-pointer">
+									<span class="text-white text-lg">SUS SU on boot</span>
+									<input type="checkbox" id="enable_sus_su" class="toggle toggle-accent" checked="checked" />
+									</label>
+								</div>
+							</div>
+							<!--this one is for 1.5.2-->
+							<div id="sus_su_152" class="hidden">
+								<div class="form-control">
+									<label class="label cursor-pointer">
+									<span class="text-white label-text font-amongus2">SUS SU Off</span>
+									<input type="radio" onclick="ksu.exec(`su -c echo 0 > /data/adb/modules/susfs4ksu/sus_su_mode`); ksu.exec(`su -c ksu_susfs sus_su 0`); ksu.toast(`sus su off no need to reboot`);" id="sus_su_0" name="radio-10" class="radio checked:bg-red-500"/>
+									</label>
+								</div>
+								<div class="form-control">
+									<label class="label cursor-pointer">
+									<span class="text-white label-text font-amongus2">SUS SU mode 1</span>
+									<input type="radio" onclick="ksu.exec(`su -c echo 1 > /data/adb/modules/susfs4ksu/sus_su_mode`); ksu.exec(`su -c ksu_susfs sus_su 1`); ksu.toast(`sus su mode 1 no need to reboot`);" id="sus_su_1" name="radio-10" class="radio checked:bg-blue-500"/>
+									</label>
+								</div>
+								<div class="form-control">
+									<label class="label cursor-pointer">
+									<span class="text-white label-text font-amongus2">SUS SU mode 2</span>
+									<input type="radio" onclick="ksu.exec(`su -c echo 2 > /data/adb/modules/susfs4ksu/sus_su_mode`); ksu.exec(`su -c ksu_susfs sus_su 2`); ksu.toast(`sus su mode 2 no need to reboot`);" id="sus_su_2" name="radio-10" class="radio checked:bg-green-500"/>
+									</label>
+								</div>
+								<div class="form-control">
+								<label class="label cursor-pointer">
+									<span class="text-white text-lg font-amongus2">SUS SU 1 on boot</span>
+									<input type="checkbox" id="enable_sus_su_1" class="toggle toggle-accent" checked="checked"/>
+								</label>
+								</div>
+								<div class="form-control">
+									<label class="label cursor-pointer">
+									<span class="text-white text-lg font-amongus2">SUS SU 2 on boot</span>
+									<input type="checkbox" id="enable_sus_su_2" class="toggle toggle-success" checked="checked"/>
+									</label>
+								</div>
+							</div>
+						  </div>
+					</div>
+				  </div>
+				  <div class="stats flex flex-col bg-black/50 mt-5 border-2 border-white">
+					<div class="stat">
+						<div class="stat-title text-2xl text-white">Kernel Version</div>
+						<p class="text-white text-sm break-all font-sans" id="kernel_version"></p>
+					</div>
+					<div class="stat">
+						<div class="stat-title text-2xl text-white">Spoof Kernel Version</div>
+						<input type="text" id="sus_uname" placeholder="default" class="input text-sm font-sans w-full"/>
+						<button class="btn btn-outline w-24 mt-2 border-white text-white text-lg font-normal" id="set_uname">Make it SuS</button>
+					</div>
+				  </div>
+			</section>
+		</div>
+	</main>
+</body>
+
+</html>
