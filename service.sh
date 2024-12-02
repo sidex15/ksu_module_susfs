@@ -2,6 +2,7 @@
 MODDIR=/data/adb/modules/susfs4ksu
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 source ${MODDIR}/utils.sh
+PERSISTENT_DIR=/data/adb/susfs4ksu
 tmpfolder=/debug_ramdisk/susfs4ksu
 hide_loops=1
 hide_vendor_sepolicy=1
