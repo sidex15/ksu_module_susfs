@@ -3,7 +3,9 @@ MODDIR=/data/adb/modules/susfs4ksu
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 source ${MODDIR}/utils.sh
 tmpfolder=/debug_ramdisk/susfs4ksu
-mkdir -p $tmpfolder
+mkdir -p $tmpfolder/logs
+
+echo "susfs4ksu/postfs-data: logging started" > $tmpfolder/logs/susfs.log
 
 #Custom Rom
 ${SUSFS_BIN} add_sus_path /system/addon.d
