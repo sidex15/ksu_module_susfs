@@ -40,11 +40,8 @@ else
 	ui_print "*********************************************************"
 fi
 
-if [ ! -d /data/adb/susfs4ksu ] ; then
-	PERSISTENT_DIR=/data/adb/susfs4ksu
-	mkdir -p $PERSISTENT_DIR
-fi
-
+PERSISTENT_DIR=/data/adb/susfs4ksu
+[ ! -d /data/adb/susfs4ksu ] && mkdir -p $PERSISTENT_DIR
 files="sus_mount.txt sus_path.txt"
 for i in $files ; do
 	if [ ! -f $PERSISTENT_DIR/$i ] ; then
