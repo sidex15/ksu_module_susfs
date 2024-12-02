@@ -40,8 +40,20 @@ else
 	ui_print "*********************************************************"
 fi
 
+if [ ! -d /data/adb/susfs4ksu ] ; then
+	PERSISTENT_DIR=/data/adb/susfs4ksu
+	mkdir -p $PERSISTENT_DIR
+fi
+
+files="sus_mount.txt"
+for i in $files ; do
+	if [ ! -f $PERSISTENT_DIR/$i ] ; then
+		cat $MODPATH/$i > $PERSISTENT_DIR/$i
+	fi
+	rm $MODPATH/$i
+done
 
 rm -rf ${MODPATH}/tools
 rm ${MODPATH}/customize.sh ${MODPATH}/README.md
 
-
+# EOF
