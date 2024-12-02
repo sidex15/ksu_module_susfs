@@ -6,6 +6,7 @@ tmpfolder=/debug_ramdisk/susfs4ksu
 logfile="$tmpfolder/logs/susfs.log"
 
 hide_loops=1
+hide_vendor_sepolicy=1
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
 #### Enable sus_su ####
@@ -96,24 +97,25 @@ fi
 
 # echo "hide_loops=1" >> /data/adb/susfs4ksu/config.sh
 [ $hide_loops = 1 ] && {
-	# Holmes 1.5+ Futile Trace Hide
-	# look for a loop that has a journal
+	echo "susfs4ksu/service: hiding loops to hide from Holmes" >> $logfile
 	for device in $(ls -Ld /proc/fs/jbd2/loop*8 | sed 's|/proc/fs/jbd2/||; s|-8||'); do
 		${SUSFS_BIN} add_sus_path /proc/fs/jbd2/${device}-8
 		${SUSFS_BIN} add_sus_path /proc/fs/ext4/${device}
 	done
 }
 
-# clean vendor sepolicy
-# evades reveny's native detector and native test conventional test (10)
-sepolicy_cil=/vendor/etc/selinux/vendor_sepolicy.cil
-grep -q lineage $sepolicy_cil && {
-        grep -v "lineage" $sepolicy_cil > $tmpfolder/vendor_sepolicy.cil
-        ${SUSFS_BIN} add_sus_kstat $sepolicy_cil
-        susfs_clone_perm $tmpfolder/vendor_sepolicy.cil $sepolicy_cil
-        mount --bind $tmpfolder/vendor_sepolicy.cil $sepolicy_cil
-        ${SUSFS_BIN} update_sus_kstat $sepolicy_cil
-        ${SUSFS_BIN} add_sus_mount $sepolicy_cil
+# echo "hide_vendor_sepolicy=1" >> /data/adb/susfs4ksu/config.sh
+[ $hide_vendor_sepolicy = 1 ] && {
+	echo "susfs4ksu/service: spoofing vendor_sepolicy" >> $logfile
+	sepolicy_cil=/vendor/etc/selinux/vendor_sepolicy.cil
+	grep -q lineage $sepolicy_cil && {
+		grep -v "lineage" $sepolicy_cil > $tmpfolder/vendor_sepolicy.cil
+		${SUSFS_BIN} add_sus_kstat $sepolicy_cil
+		susfs_clone_perm $tmpfolder/vendor_sepolicy.cil $sepolicy_cil
+		mount --bind $tmpfolder/vendor_sepolicy.cil $sepolicy_cil
+		${SUSFS_BIN} update_sus_kstat $sepolicy_cil
+		${SUSFS_BIN} add_sus_mount $sepolicy_cil
+	}
 }
 
 sleep 30;
