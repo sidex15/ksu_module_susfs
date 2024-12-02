@@ -1,11 +1,9 @@
 #!/system/bin/sh
-
 MODDIR=/data/adb/modules/susfs4ksu
-
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
-
 source ${MODDIR}/utils.sh
-
+tmpfolder=/debug_ramdisk/susfs4ksu
+mkdir -p $tmpfolder
 
 #Custom Rom
 ${SUSFS_BIN} add_sus_path /system/addon.d
@@ -35,4 +33,3 @@ ${SUSFS_BIN} add_try_umount /apex/com.android.art/bin/dex2oat64 1
 
 #Modules for mounting system
 ${SUSFS_BIN} add_sus_mount /system
-
