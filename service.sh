@@ -14,14 +14,14 @@ enable_sus_su_mode_1(){
   rm -rf ${MODDIR}/system 2>/dev/null
   # Enable sus_su or abort the function if sus_su is not supported #
   if ! ${SUSFS_BIN} sus_su 1; then
-    return false
+    return
   fi
   mkdir -p ${MODDIR}/system/bin 2>/dev/null
   # Copy the new generated sus_su_drv_path and 'sus_su' to /system/bin/ and rename 'sus_su' to 'su' #
   cp -f /data/adb/ksu/bin/sus_su ${MODDIR}/system/bin/su
   cp -f /data/adb/ksu/bin/sus_su_drv_path ${MODDIR}/system/bin/sus_su_drv_path
   echo 1 > ${MODDIR}/sus_su_mode
-  return true
+  return
 }
 # uncomment it below to enable sus_su with mode 1 #
 #enable_sus_su_mode_1
@@ -29,21 +29,21 @@ enable_sus_su_mode_1(){
 # SUS_SU 2#
 sus_su_2(){
   if ! ${SUSFS_BIN} sus_su 2; then
-    return false
+    return
   fi
 echo 2 > ${MODDIR}/sus_su_mode
-return true
+return
 }
 
 # uncomment it below to enable sus_su with mode 2 #
 sus_su_2
 
 if_both_sus_su_disabled(){
-	if grep -q '#enable_sus_su_mode_1' $MODDIR/service.sh && grep -q "#sus_su_2" $MODDIR/service.sh; then
+	if grep -q '^#enable_sus_su_mode_1$' $MODDIR/service.sh && grep -q "^#sus_su_2$" $MODDIR/service.sh; then
 		if ! ${SUSFS_BIN} sus_su 0; then
 			return
 		fi
-		echo 0 > ${MODDIR}/sus_su_mode
+		echo 0 > ${MODDIR}/sus_su_mode;
 	fi
 }
 
