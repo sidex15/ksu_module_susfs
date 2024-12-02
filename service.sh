@@ -3,6 +3,10 @@ MODDIR=/data/adb/modules/susfs4ksu
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 source ${MODDIR}/utils.sh
 tmpfolder=/debug_ramdisk/susfs4ksu
+logfile="$tmpfolder/logs/susfs.log"
+
+hide_loops=1
+[ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
 #### Enable sus_su ####
 enable_sus_su_mode_1(){
@@ -47,7 +51,7 @@ if_both_sus_su_disabled(){
 
 # if both sus_su are disabled (Do not remove)#
 if_both_sus_su_disabled
-	
+
 ## Disable susfs kernel log ##
 ${SUSFS_BIN} enable_log 1
 
@@ -90,12 +94,15 @@ if [ -s "$HASH_FILE" ]; then
     resetprop -v -n ro.boot.vbmeta.digest "$(cat $HASH_FILE)"
 fi
 
-# Holmes 1.5+ Futile Trace Hide
-# look for a loop that has a journal
-for device in $(ls -Ld /proc/fs/jbd2/loop*8 | sed 's|/proc/fs/jbd2/||; s|-8||'); do
-        ${SUSFS_BIN} add_sus_path /proc/fs/jbd2/${device}-8
-        ${SUSFS_BIN} add_sus_path /proc/fs/ext4/${device}
-done
+# echo "hide_loops=1" >> /data/adb/susfs4ksu/config.sh
+[ $hide_loops = 1 ] && {
+	# Holmes 1.5+ Futile Trace Hide
+	# look for a loop that has a journal
+	for device in $(ls -Ld /proc/fs/jbd2/loop*8 | sed 's|/proc/fs/jbd2/||; s|-8||'); do
+		${SUSFS_BIN} add_sus_path /proc/fs/jbd2/${device}-8
+		${SUSFS_BIN} add_sus_path /proc/fs/ext4/${device}
+	done
+}
 
 # clean vendor sepolicy
 # evades reveny's native detector and native test conventional test (10)
