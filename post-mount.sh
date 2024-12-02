@@ -10,7 +10,7 @@ logfile="$tmpfolder/logs/susfs.log"
 # echo "/system" >> /data/adb/susfs4ksu/sus_mount.txt
 # this'll make it easier for the webui to do stuff
 for i in $(grep -v "#" $PERSISTENT_DIR/sus_mount.txt); do
-	${SUSFS_BIN} add_sus_mount $i && echo "susfs4ksu/post-mount: adding sus_mount $i" >> $logfile
+	${SUSFS_BIN} add_sus_mount $i && echo "susfs4ksu/post-mount: [add_sus_mount] $i" >> $logfile
 done
 
 # EOF
