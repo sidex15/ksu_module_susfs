@@ -1,5 +1,6 @@
 ## v1.4.2 Revision 8
 * Introducing SUSFS WebUI 1.4.2
+  * SUS_PATH, SUS_MOUNT, and TRY_UMOUNT Stats
   * SUSFS Logs toggle
   * SUS SU toggle
   * SUS SU on boot toggle
