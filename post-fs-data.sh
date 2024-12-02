@@ -4,17 +4,23 @@ SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 source ${MODDIR}/utils.sh
 tmpfolder=/debug_ramdisk/susfs4ksu
 mkdir -p $tmpfolder/logs
+logfile="$tmpfolder/logs/susfs.log"
 
-echo "susfs4ksu/postfs-data: logging started" > $tmpfolder/logs/susfs.log
+echo "susfs4ksu/post-fs-data: logging started" > $logfile
 
-#Custom Rom
-${SUSFS_BIN} add_sus_path /system/addon.d
-${SUSFS_BIN} add_sus_path /vendor/bin/install-recovery.sh
-${SUSFS_BIN} add_sus_path /system/bin/install-recovery.sh
+# to add paths
+# echo "/system/addon.d" >> /data/adb/susfs4ksu/sus_path.txt
+# this'll make it easier for the webui to do stuff
+for i in $(grep -v "#" $PERSISTENT_DIR/sus_path.txt); do
+	${SUSFS_BIN} add_sus_path $i && echo "susfs4ksu/post-fs-data: adding sus_path $i" >> $logfile
+done
 
 # LSPosed
 # but this is probably not needed if auto_sus_bind_mount is enabled
-for i in $(grep "dex2oa" /proc/mounts | cut -f2 -d " "); do ${SUSFS_BIN} add_try_mount $i 1 ; ${SUSFS_BIN} add_sus_mount $i ; done
+for i in $(grep "dex2oa" /proc/mounts | cut -f2 -d " "); do 
+	${SUSFS_BIN} add_try_mount $i 1 && echo "susfs4ksu/post-fs-data: try_umount $i" >> $logfile
+	${SUSFS_BIN} add_sus_mount $i && echo "susfs4ksu/post-fs-data: adding sus_mount $i" >> $logfile
+done
 
 # no idea if helpful but lets abuse this new feature
 sed 's|androidboot.verifiedbootstate=orange|androidboot.verifiedbootstate=green|g' /proc/cmdline > /debug_ramdisk/susfs4ksu/cmdline
