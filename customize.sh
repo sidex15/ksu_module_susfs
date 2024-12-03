@@ -8,12 +8,22 @@ fi
 
 unzip ${ZIPFILE} -d ${TMPDIR}/susfs
 
+ver=$(uname -r | cut -d. -f1)
+if [[ $ver -lt 5 ]]; then
+    KERNEL_VERSION=non-gki
+	ui_print "Non-GKI kernel detected... use non-GKI susfs bins..."
+else
+	KERNEL_VERSION=gki
+	ui_print "GKI kernel detected... use GKI susfs bins..."
+fi
+
+
 if [ ${ARCH} = "arm64" ]; then
-        cp ${TMPDIR}/susfs/tools/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
-        cp ${TMPDIR}/susfs/tools/sus_su_arm64 ${DEST_BIN_DIR}/sus_su
+        cp ${TMPDIR}/susfs/tools/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
+        cp ${TMPDIR}/susfs/tools/${KERNEL_VERSION}/sus_su_arm64 ${DEST_BIN_DIR}/sus_su
 elif [ ${ARCH} = "arm" ]; then
-        cp ${TMPDIR}/susfs/tools/ksu_susfs_arm ${DEST_BIN_DIR}/ksu_susfs
-        cp ${TMPDIR}/susfs/tools/sus_su_arm ${DEST_BIN_DIR}/sus_su
+        cp ${TMPDIR}/susfs/tools/${KERNEL_VERSION}/ksu_susfs_arm ${DEST_BIN_DIR}/ksu_susfs
+        cp ${TMPDIR}/susfs/tools/${KERNEL_VERSION}/sus_su_arm ${DEST_BIN_DIR}/sus_su
 fi
 
 chmod 755 ${DEST_BIN_DIR}/ksu_susfs ${DEST_BIN_DIR}/sus_su
