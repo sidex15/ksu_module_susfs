@@ -1,3 +1,26 @@
+## v1.5.2 Revision 9
+* **WebUI: Introduce Custom Settings page**
+  This includes:
+  * Hide custom ROM paths
+  * Hide Gapps
+  * Hide Revanced (Youtube/Youtube Music)
+  * Spoof CMDLINE (Experimental)
+  * Hide KSU Loops
+  * Force Hide LSPosed Mounts
+  * Custom SUS Paths
+  * Custom SUS Mounts
+* WebUI: Add @backslashxx @rifsxd to credits page
+* WebUI: White Mode
+* Scripts: Complete rework to provide more customizability of sus_path and sus_mounts to WebUI (Big thanks to @backslashxx)
+  * The settings are in /data/adb/susfs4ksu
+* Scripts: Improve logging for WebUI stats
+  * If the stats don't show in WebUI it could be your logd are disabled or there is a low log buffer size in the kernel
+  * If the WebUI Stats finds no susfs paths and mounts inside the main susfs.log, it will fall off to susfs1.log which logs for susfs paths/mounts executed from the boot scripts.
+* Implement dynamic install of ksu_susfs bins for gki and non-gki
+* Introduce Spoof CMDLINE (experimental)
+* Use auto susfs hide by default by removing susfs mounts in the script and sus_path.txt
+* Hide custom rom, gapps, cmdline, and force LSPosed are off by default
+
 ## v1.5.2 Revision 8
 * Introducing SUSFS WebUI 1.5.2
 	* SUS_PATH, SUS_MOUNT, and TRY_UMOUNT Stats
