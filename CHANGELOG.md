@@ -1,3 +1,7 @@
+## v1.5.2 Revision 10
+* change again the module status check from 'susfs_init' to 'susfs:'
+* Fix sus_su installation
+
 ## v1.5.2 Revision 9
 * **WebUI: Introduce Custom Settings page**
   This includes:
