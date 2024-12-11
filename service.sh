@@ -8,8 +8,8 @@ logfile1="$tmpfolder/logs/susfs1.log"
 logfile="$tmpfolder/logs/susfs.log"
 
 hide_loops=1
-hide_vendor_sepolicy=1
-hide_compat_matrix=1
+hide_vendor_sepolicy=0
+hide_compat_matrix=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
 ## sus_su ##
