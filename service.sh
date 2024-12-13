@@ -12,26 +12,6 @@ hide_vendor_sepolicy=0
 hide_compat_matrix=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
-#### Enable sus_su ####
-enable_sus_su_mode_1(){
-  ## Here we manually create an system overlay an copy the sus_su and sus_su_drv_path to ${MODDIR}/system/bin after sus_su is enabled,
-  ## as ksu overlay script is executed after all post-fs-data.sh scripts are finished
-
-  rm -rf ${MODDIR}/system 2>/dev/null
-  # Enable sus_su or abort the function if sus_su is not supported #
-  if ! ${SUSFS_BIN} sus_su 1; then
-    return
-  fi
-  mkdir -p ${MODDIR}/system/bin 2>/dev/null
-  # Copy the new generated sus_su_drv_path and 'sus_su' to /system/bin/ and rename 'sus_su' to 'su' #
-  cp -f /data/adb/ksu/bin/sus_su ${MODDIR}/system/bin/su
-  cp -f /data/adb/ksu/bin/sus_su_drv_path ${MODDIR}/system/bin/sus_su_drv_path
-  echo 1 > ${MODDIR}/sus_su_mode
-  return
-}
-# uncomment it below to enable sus_su with mode 1 #
-#enable_sus_su_mode_1
-
 # SUS_SU 2#
 sus_su_2(){
   if ! ${SUSFS_BIN} sus_su 2; then
