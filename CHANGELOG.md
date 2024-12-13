@@ -1,3 +1,21 @@
+## v1.5.2 Revision 11
+### WebUI
+* Implement Try Umount Section in custom settings page
+* Implement additional custom rom settings
+  * Hide vendor sepolicy (disabled by default)
+  * Hide Compat Matrix (disabled by default)
+* Significant code refactor on the stats menu to reduce lag when lauching.
+* Significant code refactor custom toggles of custom settings menu to reduce lag when going to custom settings.
+* Very minor UI adjustments.
+* UI adjust for MMRL
+### Scripts
+* Implement Compat Matrix hide for the latest native detector (6.5.7) (thanks @AzyrRuthless)
+* Add hide_vendor_sepolicy, hide_compat_matrix, and try_umount configurations
+* Count the number of sus_path sus_mount and try_umount for WebUI stats on dmesg instead of logs
+* Remove the webroot folder if SUSFS is not supported in the kernel
+### KSU_SUSFS
+* update susfs userspace tool
+
 ## v1.5.2 Revision 10
 * change again the module status check from 'susfs_init' to 'susfs:'
 * Fix sus_su installation
