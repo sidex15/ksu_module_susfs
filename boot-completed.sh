@@ -7,6 +7,8 @@ tmpfolder=/data/adb/susfs4ksu
 tmpcustomrom=/debug_ramdisk/susfs4ksu
 logfile="$tmpfolder/logs/susfs.log"
 logfile1="$tmpfolder/logs/susfs1.log"
+version=$(${SUSFS_BIN} show version)
+suffix=$(grep "^version=" $MODDIR/module.prop | sed 's/.*\(-R[0-9]*\)$/\1/')
 
 hide_cusrom=0
 hide_gapps=0
@@ -22,6 +24,12 @@ else
 	touch ${MODDIR}/disable
 fi
 sed -i "s/^description=.*/$description/g" $MODDIR/module.prop
+
+# Detect susfs version
+if [ -n "$version" ] && [ "$(echo $version | cut -d. -f3)" -gt 2 ] 2>/dev/null; then
+    # Replace only version number, keep suffix
+    sed -i "s/^version=v[0-9.]*\(-R[0-9]*\)$/version=$version$suffix/" $MODDIR/module.prop
+if
 
 # routines
 
