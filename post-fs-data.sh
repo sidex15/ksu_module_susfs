@@ -8,6 +8,7 @@ mkdir -p $tmpfolder/logs
 mkdir -p $tmpfolder
 logfile="$tmpfolder/logs/susfs.log"
 logfile1="$tmpfolder/logs/susfs1.log"
+kernel_ver=$(head -n 1 "$PERSISTENT_DIR/kernelversion.txt")
 
 # use 1.5.3+ feature
 if [ $(${SUSFS_BIN} show version | head -n1 | sed 's/v//; s/\.//g') -ge 153 ]; then
@@ -23,9 +24,17 @@ fi
 [ -f $PERSISTENT_DIR/susfs_force_override ] && touch $tmpfolder/logs/susfs_active
 
 force_hide_lsposed=0
+spoof_uname=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
 echo "susfs4ksu/post-fs-data: [logging_initialized]" > $logfile1
+
+# if spoof_uname is on mode 2, set_uname will be called here
+[ $spoof_uname = 2 ] && {
+	[ -f "$PERSISTENT_DIR/kernelversion.txt" ] || kernel_ver="default"
+	[ -z "$kernel_ver" ] && kernel_ver="default"
+    ${SUSFS_BIN} set_uname $kernel_ver 'default'
+}
 
 #### Enable sus_su ####
 enable_sus_su_mode_1(){
