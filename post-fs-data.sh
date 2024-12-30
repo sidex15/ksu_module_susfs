@@ -8,7 +8,7 @@ mkdir -p $tmpfolder/logs
 logfile="$tmpfolder/logs/susfs.log"
 logfile1="$tmpfolder/logs/susfs1.log"
 
-dmesg | grep -q "susfs_init" > /dev/null && touch $tmpfolder/logs/susfs_active
+dmesg | grep -q "susfs:" > /dev/null && touch $tmpfolder/logs/susfs_active
 
 force_hide_lsposed=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
