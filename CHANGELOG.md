@@ -1,3 +1,6 @@
+## v1.4.2 Revision 6
+* Move hide sus loopdev paths to service.sh
+
 ## v1.4.2 Revision 5
 * Hide sus loopdev paths to fix Holmes 1.5.x futile hide (thanks simon punk and @backslashxx)
 * Hide system_ext (thanks @rifsxd)
