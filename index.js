@@ -88,7 +88,7 @@ H.on('NAVIGATE_END', async ({ to, from, trigger, location }) => {
     if (currentPath === '/index.html') {
 		console.log("in index");
         keyboard_pop();
-		set_uname();
+		set_uname(settings);
 		susfs_log_toggle(settings);
 		if(susfs_version.includes("1.5")) sus_su_toggle2(settings);
 		else if(susfs_version.includes("1.4.2")) sus_su_toggle(settings);
@@ -307,9 +307,31 @@ async function sus_su_toggle2(settings) {
 }*/
 
 //set uname function
-async function set_uname() {
+async function set_uname(settings) {
 	document.getElementById("kernel_version").innerHTML= await run(`uname -a | cut -d' ' -f3-`);
 	const set_uname=document.getElementById("set_uname");
+	const spoof_on_boot = document.getElementById('uname-spoof-on-boot');
+	const boot_on_postfsdata = document.getElementById('uname-spoof-on-postfsdata');
+	const postfsdata_toggle = document.getElementById('uname-at-postfs');
+    const modal = document.getElementById('confirm_modal');
+    const confirmBtn = document.getElementById('modal_confirm');
+    const cancelBtn = document.getElementById('modal_cancel');
+    const modalMessage = document.getElementById('modal_message');
+
+	// Convert the string content to an object
+	const custom_settings = settings;
+
+	if (custom_settings.spoof_uname>0){
+		spoof_on_boot.checked="checked"
+		postfsdata_toggle.classList.remove("hidden");
+	}
+	else{
+		spoof_on_boot.checked=false
+		postfsdata_toggle.classList.add("hidden");
+	}
+	if (custom_settings.spoof_uname>1) boot_on_postfsdata.checked="checked";
+	else boot_on_postfsdata.checked=false;
+
 	set_uname.addEventListener("click",async function(){
 		var sus_uname=document.getElementById("sus_uname");
 		if (sus_uname.value.includes(' ')) {
@@ -319,18 +341,65 @@ async function set_uname() {
 			if(sus_uname.value==''){
 				console.log("default kernel version");
 				run(`${susfs_bin} set_uname 'default' 'default'`)
+				run(`echo default > ${config}/kernelversion.txt`)
 				document.getElementById("kernel_version").innerHTML= await run(`uname -a | cut -d' ' -f3-`);
 				set_uname.blur();
 			}
 			else{
 				console.log(`sets to ${sus_uname.value}`);
 				run(`${susfs_bin} set_uname '${sus_uname.value}' 'default'`)
+				run(`echo ${sus_uname.value} > ${config}/kernelversion.txt`)
 				document.getElementById("kernel_version").innerHTML= await run(`uname -a | cut -d' ' -f3-`);
 				sus_uname.value='';
 				set_uname.blur();
 			}
 		}
+	});	
+	
+	spoof_on_boot.addEventListener('change', async function(event) {
+		const postfsdata_toggle = document.getElementById('uname-at-postfs');
+		event.preventDefault();
+		if (custom_settings.spoof_uname<1){
+			await run(`sed -i 's/spoof_uname=.*/spoof_uname=1/' ${config}/config.sh`);
+			custom_settings.spoof_uname=1;
+			toast("Reboot to take effect");
+			postfsdata_toggle.classList.remove("hidden");
+		}
+		else{
+			await run(`sed -i 's/spoof_uname=.*/spoof_uname=0/' ${config}/config.sh`);
+			custom_settings.spoof_uname=0;
+			boot_on_postfsdata.checked = false;
+			toast("Reboot to take effect");
+			postfsdata_toggle.classList.add("hidden");
+		}
 	});
+
+    boot_on_postfsdata.addEventListener('change', async function(event) {
+		event.preventDefault();
+		if (custom_settings.spoof_uname<2){
+			modalMessage.textContent = `Setting this on may cause a bootloop or instability if spoofed incorrectly. Are you sure you want to enable post-fs-data execution?`;
+			modal.showModal();
+		}
+		else{
+			await run(`sed -i 's/spoof_uname=.*/spoof_uname=1/' ${config}/config.sh`);
+		}
+    });
+
+    confirmBtn.addEventListener('click', async function() {
+		const boot_on_postfsdata = document.getElementById('uname-spoof-on-postfsdata');
+        boot_on_postfsdata.checked = "checked";
+		await run(`sed -i 's/spoof_uname=.*/spoof_uname=2/' ${config}/config.sh`);
+		custom_settings.spoof_uname=2;
+		toast("Reboot to take effect");
+        modal.close();
+    });
+
+    cancelBtn.addEventListener('click', async function() {
+		const boot_on_postfsdata = document.getElementById('uname-spoof-on-postfsdata');
+        boot_on_postfsdata.checked = false;
+        modal.close();
+    });
+
 }
 
 //susfs log toggle
@@ -660,6 +729,6 @@ inputBox.addEventListener('blur', () => {
 }
 
 //susfsstats();
-set_uname()
+set_uname(settings);
 keyboard_pop();
 susfs_log_toggle(settings);
