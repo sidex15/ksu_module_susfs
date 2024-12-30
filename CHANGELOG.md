@@ -1,3 +1,13 @@
+## v1.5.2 Revision 8
+* Introducing SUSFS WebUI 1.5.2
+	* SUSFS Logs toggle
+	* SUS SU modes (0,1,2)
+	* SUS SU modes on boot (1,2)
+	* Spoof Kernel Version
+* Move addon.d and install-recovery.sh sus_path to post-fs-data.sh
+* Remove comment on susfs enable log and make susfslogs.txt
+* Change to 'susfs:' string on susfs detection
+
 ## v1.4.2 Revision 7
 * Hide lineage vendor sepolicy traces (thanks @backslashxx)
 * Hide Custom ROM related paths
