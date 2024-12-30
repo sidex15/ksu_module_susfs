@@ -40,14 +40,26 @@ else
 	ui_print "*********************************************************"
 fi
 
+ui_print "! Preparing susfs4ksu persistent directory"
 PERSISTENT_DIR=/data/adb/susfs4ksu
 [ ! -d /data/adb/susfs4ksu ] && mkdir -p $PERSISTENT_DIR
 files="sus_mount.txt try_umount.txt sus_path.txt config.sh"
 for i in $files ; do
-	if [ ! -f $PERSISTENT_DIR/$i ] ; then
-		cat $MODPATH/$i > $PERSISTENT_DIR/$i
-	fi
-	rm $MODPATH/$i
+    if [ ! -f $PERSISTENT_DIR/$i ] ; then
+        # If file doesn't exist, create it
+        cat $MODPATH/$i > $PERSISTENT_DIR/$i
+    elif [ "$i" = "config.sh" ]; then
+        # Ensure file ends with newline
+        [ -s "$PERSISTENT_DIR/$i" ] && [ "$(tail -c1 "$PERSISTENT_DIR/$i" | xxd -p)" != "0a" ] && echo "" >> "$PERSISTENT_DIR/$i"
+        # For config.sh, append only new keys
+        while IFS= read -r line; do
+            # Extract key name before = sign
+            key=$(echo "$line" | cut -d'=' -f1)
+            # Only append if key doesn't exist
+            grep -q "^${key}=" "$PERSISTENT_DIR/$i" || echo "$line" >> "$PERSISTENT_DIR/$i"
+        done < "$MODPATH/$i"
+    fi
+    rm $MODPATH/$i
 done
 
 rm -rf ${MODPATH}/tools
