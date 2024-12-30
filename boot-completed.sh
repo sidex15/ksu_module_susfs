@@ -11,6 +11,17 @@ hide_gapps=0
 hide_revanced=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
+# update description
+if [ -f $tmpfolder/logs/susfs_active ] ; then
+	description="description=status: ✅ SuS ඞ "
+else
+	description="description=status: failed 💢 - Make sure you're on a SuSFS patched kernel! 😭"
+	touch ${MODDIR}/disable
+fi
+sed -i "s/^description=.*/$description/g" $MODDIR/module.prop
+
+# routines
+
 # echo "hide_cusrom=1" >> /data/adb/susfs4ksu/config.sh
 [ $hide_cusrom = 1 ] && {
 	echo "susfs4ksu/boot-completed: hide_cusrom" >> $logfile
@@ -27,6 +38,13 @@ hide_revanced=0
 		${SUSFS_BIN} add_sus_path $i 
 		echo "susfs4ksu/boot-completed: adding sus_path $i" >> $logfile
 	done
+}
+
+# echo "spoof_cmdline=1" >> /data/adb/susfs4ksu/config.sh
+[ $spoof_cmdline = 1 ] && {
+	echo "susfs4ksu/boot-completed: spoof_cmdline" >> $logfile
+	sed 's|androidboot.verifiedbootstate=orange|androidboot.verifiedbootstate=green|g' /proc/cmdline > /debug_ramdisk/susfs4ksu/cmdline
+	${SUSFS_BIN} set_proc_cmdline /debug_ramdisk/susfs4ksu/cmdline
 }
 
 # echo "hide_revanced=1" >> /data/adb/susfs4ksu/config.sh
@@ -46,15 +64,4 @@ hide_revanced=0
 		done
 	}
 	for i in $packages ; do hide_app $i ; done 
-}
-
-
-if [ -f $tmpfolder/logs/susfs_active ] ; then
-	description="description=status: ✅ SuS ඞ "
-else
-	description="description=status: failed 💢 - Make sure you're on a SuSFS patched kernel! 😭"
-	touch ${MODDIR}/disable
-fi
-sed -i "s/^description=.*/$description/g" $MODDIR/module.prop
-
-
+} & # run in background
