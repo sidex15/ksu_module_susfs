@@ -1,3 +1,10 @@
+## v1.4.2 Revision 7
+* Hide lineage vendor sepolicy traces (thanks @backslashxx)
+* Hide Custom ROM related paths
+* Hide Gapps releated paths
+* Move addon.d and install-recovery.sh sus_path to boot-completed.sh
+* Reduce false positives on module status description
+
 ## v1.4.2 Revision 6
 * Move hide sus loopdev paths to service.sh
 
