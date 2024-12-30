@@ -9,6 +9,7 @@ logfile="$tmpfolder/logs/susfs.log"
 
 hide_loops=1
 hide_vendor_sepolicy=1
+hide_compat_matrix=1
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
 ## sus_su ##
@@ -116,6 +117,20 @@ fi
 		mount --bind $tmpfolder/vendor_sepolicy.cil $sepolicy_cil
 		${SUSFS_BIN} update_sus_kstat $sepolicy_cil && echo "[update_sus_kstat]: susfs4ksu/service $i" >> $logfile1
 		${SUSFS_BIN} add_sus_mount $sepolicy_cil && echo "[sus_mount]: susfs4ksu/service $i" >> $logfile1
+	}
+}
+
+# echo "hide_compat_matrix=1" >> /data/adb/susfs4ksu/config.sh
+[ $hide_compat_matrix = 1 ] && {
+	echo "susfs4ksu/service: [hide_compat_matrix] - compatibility_matrix.device.xml" >> $logfile1
+	compatibility_matrix=/system/etc/vintf/compatibility_matrix.device.xml
+	grep -q lineage $compatibility_matrix && {
+		grep -v "lineage" $compatibility_matrix > $tmpfolder/compatibility_matrix.device.xml
+		${SUSFS_BIN} add_sus_kstat $compatibility_matrix && echo "[update_sus_kstat]: susfs4ksu/service $i" >> $logfile1
+		susfs_clone_perm $tmpfolder/compatibility_matrix.device.xml $compatibility_matrix
+		mount --bind $tmpfolder/compatibility_matrix.device.xml $compatibility_matrix
+		${SUSFS_BIN} update_sus_kstat $compatibility_matrix && echo "[update_sus_kstat]: susfs4ksu/service $i" >> $logfile1
+		${SUSFS_BIN} add_sus_mount $compatibility_matrix && echo "[sus_mount]: susfs4ksu/service $i" >> $logfile1
 	}
 }
 
