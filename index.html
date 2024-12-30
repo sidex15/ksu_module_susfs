@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link href="./index.css" type="text/css" rel="stylesheet">
+	<script type="module" src="index.js"></script>
+</head>
+
+<style>
+	div,p{
+		z-index: 40;	
+	}
+</style>
+
+<body class="bg-black font-amongus">
+	<canvas id="backgroundCanvas" class="absolute inset-0 z-0 max-h-screen bg-black"></canvas>
+	<main class="max-h-screen relative overflow-auto text-base" data-router-wrapper>
+		<div data-router-view="home">
+			<div class="toast toast-top toast-center">
+				<div id="toast" class="alert alert-error font-sans opacity-0 duration-300 hidden">
+					<span>Spaces are not allowed in the input!</span>
+				  </div>
+			</div>
+			<div class="flex justify-between items-center mx-auto ml-4 pt-4 mr-4">
+				<div class="flex flex-col">
+					<h1 class="font-bold text-6xl text-white">SUSFS A</h1>
+					<h3 class="text-3xl text-balance text-white">WebUI menu</h3>
+				</div>
+				<div>
+					<a href="credits.html" class="text-white"><button class="btn btn-outline text-xl border-white mt-2">about</button></a>
+				</div>
+			</div>
+			<section class="flex flex-col justify-start items-center min-h-fit ml-4 mr-4">
+				<div class="stats stats-horizontal border-2 border-white divide-white bg-black/50 lg:stats-horizontal mt-6">
+					<div class="stat">
+					  <div class="stat-title text-white text-2xl text-ellipsis lowercase">SUS PATH</div>
+					  <div class="stat-value text-white text-xl text-ellipsis overflow-hidden text-center" id="sus_path"></div>
+					</div>
+				  
+					<div class="stat">
+					  <div class="stat-title text-white text-2xl text-ellipsis lowercase">SUS MOUNT</div>
+					  <div class="stat-value text-white text-xl text-ellipsis overflow-hidden text-center" id="sus_mount"></div>
+					</div>
+				  
+					<div class="stat">
+					  <div class="stat-title text-white text-2xl text-ellipsis lowercase">TRY UMOUNT</div>
+					  <div class="stat-value text-white text-xl text-ellipsis overflow-hidden text-center" id="try_umount"></div>
+					</div>
+				  </div>
+				  <div class="stats flex flex-col bg-black/50 mt-5 border-2 border-white">
+					<div class="stat">
+						<div class="w-[16.6rem]">
+							<div class="form-control">
+							  <label class="label cursor-pointer">
+								<span class="text-white text-2xl">SUSFS Logs</span>
+								<input type="checkbox" id="susfs_log" class="toggle toggle-primary" checked="checked" />
+							  </label>
+							</div>
+							<div class="form-control">
+							  <label class="label cursor-pointer">
+								<span class="text-white text-2xl">SUS SU</span>
+								<input type="checkbox" id="sus_su" class="toggle toggle-secondary" checked="checked" />
+							  </label>
+							</div>
+							<div class="form-control">
+							  <label class="label cursor-pointer">
+								<span class="text-white text-2xl">SUS SU on boot</span>
+								<input type="checkbox" id="enable_sus_su" class="toggle toggle-accent" checked="checked" />
+							  </label>
+							</div>
+						  </div>
+					</div>
+				  </div>
+				  <div class="stats flex flex-col bg-black/50 mt-5 border-2 border-white">
+					<div class="stat">
+						<div class="stat-title text-2xl text-white">Kernel Version</div>
+						<p class="text-white text-sm break-all font-sans" id="kernel_version"></p>
+					</div>
+					<div class="stat">
+						<div class="stat-title text-2xl text-white">Spoof Kernel Version</div>
+						<input type="text" id="sus_uname" placeholder="default" class="input text-sm font-sans w-full"/>
+						<button class="btn btn-outline w-24 mt-2 border-white text-white text-lg font-normal" id="set_uname">Make it SuS</button>
+					</div>
+				  </div>
+			</section>
+		</div>
+	</main>
+</body>
+
+</html>
