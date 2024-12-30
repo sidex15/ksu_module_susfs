@@ -1,7 +1,7 @@
-#!/system/bin/sh
+#!/bin/sh
 MODDIR=/data/adb/modules/susfs4ksu
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
-source ${MODDIR}/utils.sh
+. ${MODDIR}/utils.sh
 PERSISTENT_DIR=/data/adb/susfs4ksu
 tmpfolder=/data/adb/susfs4ksu
 tmpcustomrom=/debug_ramdisk/susfs4ksu
@@ -10,7 +10,18 @@ mkdir -p $tmpcustomrom
 logfile="$tmpfolder/logs/susfs.log"
 logfile1="$tmpfolder/logs/susfs1.log"
 
-dmesg | grep -q "susfs:" > /dev/null && touch $tmpfolder/logs/susfs_active
+# use 1.5.3+ feature
+if [ $(${SUSFS_BIN} show version | head -n1 | sed 's/v//; s/\.//g') -ge 153 ]; then
+	touch $tmpfolder/logs/susfs_active
+else
+	dmesg | grep -q "susfs:" > /dev/null && touch $tmpfolder/logs/susfs_active
+fi
+
+# for people that is on legacy with broken dmesg or disabled logging
+# actually first, fuck you
+# second, heres your override
+# touch /data/adb/susfs4ksu/susfs_force_override
+[ -f $PERSISTENT_DIR/susfs_force_override ] && touch $tmpfolder/logs/susfs_active
 
 force_hide_lsposed=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
@@ -42,13 +53,6 @@ enable_sus_su_mode_1(){
 }
 # uncomment it below to enable sus_su with mode 1 #
 #enable_sus_su_mode_1
-
-# to add paths
-# echo "/system/addon.d" >> /data/adb/susfs4ksu/sus_path.txt
-# this'll make it easier for the webui to do stuff
-for i in $(grep -v "#" $PERSISTENT_DIR/sus_path.txt); do
-	${SUSFS_BIN} add_sus_path $i && echo "[sus_path]: susfs4ksu/post-fs-data $i" >> $logfile1
-done
 
 # LSPosed
 # but this is probably not needed if auto_sus_bind_mount is enabled
