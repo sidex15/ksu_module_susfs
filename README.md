@@ -9,7 +9,7 @@ This module provides root hiding for KernelSU on the kernel level.
 - Do not mix/install with other root-hiding modules such as shamiko or zygisk assistant.
 - HideMyApplist is acceptable
 - Revanced root module compatible
-- Recommended to use [my fork of systemless-hosts-KernelSU-module by symbuzzer](https://github.com/sidex15/systemless-hosts-KernelSU-module) if you want to use systemless hosts
+- Recommended to use [bindhosts](https://github.com/backslashxx/bindhosts) if you want to use systemless hosts
 
 ## Adding ro.boot.vbmeta.digest value
 This module will now have a directory called `VerifiedBootHash` in `/data/adb` containing `VerifiedBootHash.txt` for users with missing `ro.boot.vbmeta.digest` value to prevent partition modified and abnormal boot state detection. 
