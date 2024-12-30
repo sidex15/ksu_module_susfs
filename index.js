@@ -311,21 +311,22 @@ async function set_uname() {
 	document.getElementById("kernel_version").innerHTML= await run(`uname -a | cut -d' ' -f3-`);
 	const set_uname=document.getElementById("set_uname");
 	set_uname.addEventListener("click",async function(){
-		var sus_uname=document.getElementById("sus_uname").value;
-		if (sus_uname.includes(' ')) {
+		var sus_uname=document.getElementById("sus_uname");
+		if (sus_uname.value.includes(' ')) {
 			toast('Spaces are not allowed in the input!');
 		} 
 		else {
-			if(sus_uname==''){
+			if(sus_uname.value==''){
 				console.log("default kernel version");
 				run(`${susfs_bin} set_uname 'default' 'default'`)
 				document.getElementById("kernel_version").innerHTML= await run(`uname -a | cut -d' ' -f3-`);
 				set_uname.blur();
 			}
 			else{
-				console.log(`sets to ${sus_uname}`);
-				run(`${susfs_bin} set_uname '${sus_uname}' 'default'`)
+				console.log(`sets to ${sus_uname.value}`);
+				run(`${susfs_bin} set_uname '${sus_uname.value}' 'default'`)
 				document.getElementById("kernel_version").innerHTML= await run(`uname -a | cut -d' ' -f3-`);
+				sus_uname.value='';
 				set_uname.blur();
 			}
 		}
