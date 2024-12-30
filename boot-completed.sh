@@ -57,10 +57,10 @@ hide_revanced=0
 
 ###########
 
-if dmesg | grep -q "susfs:"; then
+if [ -f $tmpfolder/logs/susfs_active ] ; then
 	description="description=status: ✅ SuS ඞ "
 else
-	description="description=status: failed ❌ - Make sure you're on a SuSFS patched kernel!"
+	description="description=status: failed 💢 - Make sure you're on a SuSFS patched kernel! 😭"
 	touch ${MODDIR}/disable
 fi
 sed -i "s/^description=.*/$description/g" $MODDIR/module.prop
