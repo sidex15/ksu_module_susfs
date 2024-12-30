@@ -31,10 +31,8 @@ ${SUSFS_BIN} add_try_umount /apex/com.android.art/bin/dex2oat 1
 ${SUSFS_BIN} add_try_umount /apex/com.android.art/bin/dex2oat32 1
 ${SUSFS_BIN} add_try_umount /apex/com.android.art/bin/dex2oat64 1
 
-#Modules for mounting system
-${SUSFS_BIN} add_sus_mount /system
-
 # no idea if helpful but lets abuse this new feature
 sed 's|androidboot.verifiedbootstate=orange|androidboot.verifiedbootstate=green|g' /proc/cmdline > /debug_ramdisk/susfs4ksu/cmdline
 ${SUSFS_BIN} set_proc_cmdline /debug_ramdisk/susfs4ksu/cmdline
 
+# EOF
