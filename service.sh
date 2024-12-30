@@ -10,34 +10,31 @@ logfile="$tmpfolder/logs/susfs.log"
 hide_loops=1
 hide_vendor_sepolicy=0
 hide_compat_matrix=0
+susfs_log=1
+sus_su=2
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
 # SUS_SU 2#
 sus_su_2(){
-  if ! ${SUSFS_BIN} sus_su 2; then
-    return
-  fi
-echo 2 > ${MODDIR}/sus_su_mode
-return
+	# Enable sus_su or abort the function if sus_su is not supported #
+	if ! ${SUSFS_BIN} sus_su 2; then
+		sed -i "s/^sus_su=.*/sus_su=-1/" ${PERSISTENT_DIR}/config.sh
+		return
+	fi
+	sed -i "s/^sus_su=.*/sus_su=2/" ${PERSISTENT_DIR}/config.sh
+	sed -i "s/^sus_su_acitve=.*/sus_active=2/" ${PERSISTENT_DIR}/config.sh
+	return
 }
 
 # uncomment it below to enable sus_su with mode 2 #
-sus_su_2
-
-if_both_sus_su_disabled(){
-	if grep -q '^#enable_sus_su_mode_1$' $MODDIR/service.sh && grep -q "^#sus_su_2$" $MODDIR/service.sh; then
-		if ! ${SUSFS_BIN} sus_su 0; then
-			return
-		fi
-		echo 0 > ${MODDIR}/sus_su_mode;
-	fi
+[ $sus_su = 2 ] && {
+	sus_su_2
 }
 
-# if both sus_su are disabled (Do not remove)#
-if_both_sus_su_disabled
-
 ## Disable susfs kernel log ##
-${SUSFS_BIN} enable_log 1
+[ $susfs_log = 1 ] && {
+	${SUSFS_BIN} enable_log 1
+}
 
 ## Props ##
 resetprop -w sys.boot_completed 0
