@@ -26,7 +26,7 @@ enable_sus_su_mode_1(){
   # Enable sus_su or abort the function if sus_su is not supported #
   # Enable sus_su or abort the function if sus_su is not supported #
 	if ! ${SUSFS_BIN} sus_su 1; then
-		sed -i "s/^sus_su=.*/d" ${PERSISTENT_DIR}/config.sh
+		sed -i "s/^sus_su=.*/sus_su=-1/" ${PERSISTENT_DIR}/config.sh
 		return
 	fi
 	# Enable sus_su or abort the function if sus_su is not supported #
