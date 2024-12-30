@@ -15,11 +15,6 @@ fi
 
 sed -i "s/^description=.*/$description/g" $MODDIR/module.prop
 
-#Custom Rom
-${SUSFS_BIN} add_sus_path /system/addon.d
-${SUSFS_BIN} add_sus_path /vendor/bin/install-recovery.sh
-${SUSFS_BIN} add_sus_path /system/bin/install-recovery.sh
-
 # hide lineage (almost all custom roms have this)
 for i in $(find /system /vendor /system_ext /product -iname *lineage* -o -name *crdroid* ) ; do ${SUSFS_BIN} add_sus_path $i ; done
 
