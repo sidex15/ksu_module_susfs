@@ -17,13 +17,6 @@ force_hide_lsposed=0
 
 echo "susfs4ksu/post-fs-data: [logging_initialized]" > $logfile1
 
-# to add paths
-# echo "/system/addon.d" >> /data/adb/susfs4ksu/sus_path.txt
-# this'll make it easier for the webui to do stuff
-for i in $(grep -v "#" $PERSISTENT_DIR/sus_path.txt); do
-	${SUSFS_BIN} add_sus_path $i && echo "[sus_path]: susfs4ksu/post-fs-data $i" >> $logfile1
-done
-
 # LSPosed
 # but this is probably not needed if auto_sus_bind_mount is enabled
 [ $force_hide_lsposed = 1 ] && {
