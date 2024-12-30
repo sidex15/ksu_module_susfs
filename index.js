@@ -6,6 +6,10 @@ import './space.js';
 //module location
 const moddir="/data/adb/modules/susfs4ksu"
 
+//susfs_version
+var susfs_version = await run(`su -c "grep version= ${moddir}/module.prop | cut -d '=' -f 2"`);
+const susfs_version_tag = document.getElementById("susfs_version");
+susfs_version_tag.innerHTML=susfs_version
 
 //susfs stats and kernel version
 var is_log_empty=await run (`[ -s ${moddir}/susfslogs.txt ] && echo false || echo true`);
@@ -27,16 +31,27 @@ document.getElementById("try_umount").innerHTML= try_umount;
 document.getElementById("kernel_version").innerHTML= await run(`uname -a | cut -d' ' -f3-`);
 
 //toggles
-var is_sus_su_exists = await run(`su -c "[ -f ${moddir}/sus_su_enabled ] && echo true || echo false"`);
+var is_sus_su_exists = await run(`su -c "[[ -f "${moddir}/sus_su_enabled" || -f "${moddir}/sus_su_mode" ]] && echo true || echo false"`);
+const sus_su_152 = document.getElementById("sus_su_152");
+const sus_su_142 = document.getElementById("sus_su_142");
+const sus_su_NOS = document.getElementById("sus_su_NOS");
 //toast(`is_sus_su_exists: ${is_sus_su_exists}`);
 if (is_sus_su_exists=="false"){
 	sus_su.removeAttribute("checked");
 	sus_su.setAttribute("disabled","");
 	enable_sus_su.removeAttribute("checked");
 	enable_sus_su.setAttribute("disabled","");
+	sus_su_NOS.classList.remove("hidden")
 }
 else{
-	sus_su_toggle();
+	if(susfs_version.includes("1.5.2")){
+		sus_su_152.classList.remove("hidden")
+		sus_su_radio()
+	}
+	else if(susfs_version.includes("1.4.2")){
+		sus_su_142.classList.remove("hidden")
+		sus_su_toggle();
+	}
 }
 
 
@@ -50,9 +65,10 @@ const H = new Highway.Core({
 //execute again after the transition ends
 H.on('NAVIGATE_END', ({ to, from, trigger, location }) => {
 	keyboard_pop()
-	if(is_sus_su_exists=="true") sus_su_toggle();
 	set_uname();
 	susfs_log_toggle();
+	if(susfs_version.includes("1.5.2") && is_sus_su_exists=="true") sus_su_radio()
+	else if(susfs_version.includes("1.4.2") && is_sus_su_exists=="true") sus_su_toggle();
 });
 
 //run function
@@ -118,6 +134,77 @@ async function sus_su_toggle() {
 	});
 }
 
+//sus_su for 1.5.2
+async function sus_su_radio() {
+	const sus_su_0 = document.getElementById("sus_su_0");
+	const sus_su_1 = document.getElementById("sus_su_1");
+	const sus_su_2 = document.getElementById("sus_su_2");
+	const enable_sus_su_1 = document.getElementById("enable_sus_su_1");
+	const enable_sus_su_2 = document.getElementById("enable_sus_su_2");
+	var is_sus_su_mode_1 = await run(`su -c "if grep -q '^enable_sus_su_mode_1$' ${moddir}/service.sh; then echo true; else echo false; fi;"`);
+	var is_sus_su_mode_2 = await run(`su -c "if grep -q '^sus_su_2$' ${moddir}/service.sh; then echo true; else echo false; fi;"`);
+	var is_sus_su_mode = await run(`su -c "cat ${moddir}/sus_su_mode"`);
+	//toast(`sus_su on boot: ${is_sus_su_mode_1}`);
+	//toast(`sus_su: ${is_sus_su_enable}`);
+	if(is_sus_su_mode=='1'){
+		sus_su_0.checked=false
+		sus_su_1.checked="checked"
+		sus_su_2.checked=false
+	}
+	else if(is_sus_su_mode=='2'){
+		sus_su_0.checked=false
+		sus_su_1.checked=false
+		sus_su_2.checked="checked"
+	}
+	else if(is_sus_su_mode=='0'){
+		sus_su_0.checked="checked"
+		sus_su_1.checked=false
+		sus_su_2.checked=false
+	}
+
+	if(is_sus_su_mode_1=="true"){
+		sus_su_1.removeAttribute("disabled");
+		enable_sus_su_1.setAttribute("checked","checked");
+	}
+	else{
+		sus_su_1.setAttribute("disabled","");
+		enable_sus_su_1.removeAttribute("checked");
+	}
+	if (is_sus_su_mode_2=="false"){
+		enable_sus_su_2.removeAttribute("checked");
+	}
+	
+	enable_sus_su_1.addEventListener("click", async function(){
+		if (enable_sus_su_1.hasAttribute("checked")){
+			console.log("false")
+			enable_sus_su_1.removeAttribute("checked");
+			toast("Reboot to take effect");
+			run(`su -c "sed -i 's/^enable_sus_su_mode_1$/#enable_sus_su_mode_1/' ${moddir}/service.sh"`);
+		}
+		else{
+			console.log("true")
+			enable_sus_su_1.setAttribute("checked","checked");
+			toast("Reboot to take effect");
+			run(`su -c "sed -i 's/^#enable_sus_su_mode_1$/enable_sus_su_mode_1/' ${moddir}/service.sh"`);
+		}
+	});
+	enable_sus_su_2.addEventListener("click", async function(){
+		if (enable_sus_su_2.hasAttribute("checked")){
+			console.log("false")
+			enable_sus_su_2.removeAttribute("checked");
+			toast("Reboot to take effect");
+			run(`su -c "sed -i 's/^sus_su_2$/#sus_su_2/' ${moddir}/service.sh"`);
+		}
+		else{
+			console.log("true")
+			enable_sus_su_2.setAttribute("checked","checked");
+			toast("Reboot to take effect");
+			run(`su -c "sed -i 's/^#sus_su_2$/sus_su_2/' ${moddir}/service.sh"`);	
+		}
+	});
+}
+
+
 //Toast function
 /*function showToast(msg){
 	const sustoast = document.getElementById('toast');
@@ -138,7 +225,8 @@ async function sus_su_toggle() {
 }*/
 
 //set uname function
-function set_uname() {
+async function set_uname() {
+	document.getElementById("kernel_version").innerHTML= await run(`uname -a | cut -d' ' -f3-`);
 	const set_uname=document.getElementById("set_uname");
 	set_uname.addEventListener("click",async function(){
 		var sus_uname=document.getElementById("sus_uname").value;

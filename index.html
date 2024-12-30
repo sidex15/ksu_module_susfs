@@ -27,6 +27,7 @@
 				<div class="flex flex-col">
 					<h1 class="font-bold text-6xl text-white">SUSFS A</h1>
 					<h3 class="text-3xl text-balance text-white">WebUI menu</h3>
+					<h4 id="susfs_version" class="text-xl text-balance text-white font-amongus2"></h4>
 				</div>
 				<div>
 					<a href="credits.html" class="text-white"><button class="btn btn-outline text-xl border-white mt-2">about</button></a>
@@ -58,17 +59,61 @@
 								<input type="checkbox" id="susfs_log" class="toggle toggle-primary" checked="checked" />
 							  </label>
 							</div>
-							<div class="form-control">
-							  <label class="label cursor-pointer">
-								<span class="text-white text-2xl">SUS SU</span>
-								<input type="checkbox" id="sus_su" class="toggle toggle-secondary" checked="checked" />
-							  </label>
+							<div id="sus_su_NOS" class="form-control hidden">
+								<label class="label cursor-pointer">
+								  <span class="text-white text-lg">SUS SU is not supported in your kernel</span>
+								  <svg class="w-6 h-6 text-gray-800 dark:text-red-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 9-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+								  </svg>									  
+								</label>
 							</div>
-							<div class="form-control">
-							  <label class="label cursor-pointer">
-								<span class="text-white text-2xl">SUS SU on boot</span>
-								<input type="checkbox" id="enable_sus_su" class="toggle toggle-accent" checked="checked" />
-							  </label>
+							<!--this one is for 1.4.2-->
+							<div id="sus_su_142" class="hidden">
+								<div class="form-control">
+								<label class="label cursor-pointer">
+									<span class="text-white text-2xl">SUS SU</span>
+									<input type="checkbox" id="sus_su" class="toggle toggle-secondary" checked="checked" />
+								</label>
+								</div>
+								<div class="form-control">
+									<label class="label cursor-pointer">
+									<span class="text-white text-lg">SUS SU on boot</span>
+									<input type="checkbox" id="enable_sus_su" class="toggle toggle-accent" checked="checked" />
+									</label>
+								</div>
+							</div>
+							<!--this one is for 1.5.2-->
+							<div id="sus_su_152" class="hidden">
+								<div class="form-control">
+									<label class="label cursor-pointer">
+									<span class="text-white label-text font-amongus2">SUS SU Off</span>
+									<input type="radio" onclick="ksu.exec(`su -c echo 0 > /data/adb/modules/susfs4ksu/sus_su_mode`); ksu.exec(`su -c ksu_susfs sus_su 0`); ksu.toast(`sus su off no need to reboot`);" id="sus_su_0" name="radio-10" class="radio checked:bg-red-500"/>
+									</label>
+								</div>
+								<div class="form-control">
+									<label class="label cursor-pointer">
+									<span class="text-white label-text font-amongus2">SUS SU mode 1</span>
+									<input type="radio" onclick="ksu.exec(`su -c echo 1 > /data/adb/modules/susfs4ksu/sus_su_mode`); ksu.exec(`su -c ksu_susfs sus_su 1`); ksu.toast(`sus su mode 1 no need to reboot`);" id="sus_su_1" name="radio-10" class="radio checked:bg-blue-500"/>
+									</label>
+								</div>
+								<div class="form-control">
+									<label class="label cursor-pointer">
+									<span class="text-white label-text font-amongus2">SUS SU mode 2</span>
+									<input type="radio" onclick="ksu.exec(`su -c echo 2 > /data/adb/modules/susfs4ksu/sus_su_mode`); ksu.exec(`su -c ksu_susfs sus_su 2`); ksu.toast(`sus su mode 2 no need to reboot`);" id="sus_su_2" name="radio-10" class="radio checked:bg-green-500"/>
+									</label>
+								</div>
+								<div class="form-control">
+								<label class="label cursor-pointer">
+									<span class="text-white text-lg font-amongus2">SUS SU 1 on boot</span>
+									<input type="checkbox" id="enable_sus_su_1" class="toggle toggle-accent" checked="checked"/>
+								</label>
+								</div>
+								<div class="form-control">
+									<label class="label cursor-pointer">
+									<span class="text-white text-lg font-amongus2">SUS SU 2 on boot</span>
+									<input type="checkbox" id="enable_sus_su_2" class="toggle toggle-success" checked="checked"/>
+									</label>
+								</div>
 							</div>
 						  </div>
 					</div>
