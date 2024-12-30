@@ -1,3 +1,7 @@
+## v1.4.2 Revision 10
+* change again the module status check from 'susfs_init' to 'susfs:'
+* change update zip download location to ksu_module_susfs_1.4.2.zip
+
 ## v1.4.2 Revision 9
 * **WebUI: Introduce Custom Settings page**
   This includes:
