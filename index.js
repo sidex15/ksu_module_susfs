@@ -1,5 +1,6 @@
 import { exec, toast } from 'kernelsu';
 import Highway from '@dogstudio/highway';
+import { gsap } from 'gsap';
 import Fade from './fade.js';
 import './space.js';
 
@@ -7,7 +8,6 @@ import './space.js';
 const tmpfolder="/debug_ramdisk/susfs4ksu"
 const moddir="/data/adb/modules/susfs4ksu"
 const config="/data/adb/susfs4ksu"
-
 //susfs_version
 var susfs_version = await run(`su -c "grep version= ${moddir}/module.prop | cut -d '=' -f 2"`);
 const susfs_version_tag = document.getElementById("susfs_version");
@@ -544,11 +544,15 @@ async function custom_try_umount(){
 	
 	try_umount_area.addEventListener('blur', () => {
 		// Remove the padding when the input loses focus
-		mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
-		setTimeout(() => {
+		//mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+		/*setTimeout(() => {
 			mainContainer.style.paddingBottom = '0px';
-		}, 500);
-		
+		}, 500);*/
+		gsap.to(mainContainer, { 
+			duration: 0.5, 
+			paddingBottom: '0px', 
+			ease: 'power1.out' 
+		});
 	});
 }
 
@@ -559,7 +563,7 @@ const mainContainer = document.querySelector('main');
 
 inputBox.addEventListener('focus', () => {
     // Add padding to prevent the keyboard from obscuring content
-    mainContainer.style.paddingBottom = '300px'; // Adjust padding value based on need
+    mainContainer.style.paddingBottom = '350px'; // Adjust padding value based on need
     inputBox.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
 });
 
