@@ -45,7 +45,7 @@ if [ ! -d /data/adb/susfs4ksu ] ; then
 	mkdir -p $PERSISTENT_DIR
 fi
 
-files="sus_mount.txt"
+files="sus_mount.txt sus_path.txt"
 for i in $files ; do
 	if [ ! -f $PERSISTENT_DIR/$i ] ; then
 		cat $MODPATH/$i > $PERSISTENT_DIR/$i
