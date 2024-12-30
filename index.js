@@ -8,6 +8,7 @@ import './space.js';
 const tmpfolder="/debug_ramdisk/susfs4ksu"
 const moddir="/data/adb/modules/susfs4ksu"
 const config="/data/adb/susfs4ksu"
+const settings = catToObject(await run(`su -c "cat ${config}/config.sh"`));
 //susfs_version
 var susfs_version = await run(`su -c "grep version= ${moddir}/module.prop | cut -d '=' -f 2"`);
 const susfs_version_tag = document.getElementById("susfs_version");
@@ -41,12 +42,13 @@ document.getElementById("try_umount").innerHTML= susfs_stats.try_umount;
 document.getElementById("kernel_version").innerHTML= await run(`uname -a | cut -d' ' -f3-`);
 
 //toggles
-var is_sus_su_exists = await run(`su -c "[[ -f "${moddir}/sus_su_enabled" || -f "${moddir}/sus_su_mode" ]] && echo true || echo false"`);
+var is_sus_su_exists = settings.sus_su//await run(`su -c "[[ -f "${moddir}/sus_su_enabled" || -f "${moddir}/sus_su_mode" ]] && echo true || echo false"`);
 const sus_su_152 = document.getElementById("sus_su_152");
 const sus_su_142 = document.getElementById("sus_su_142");
+const sus_su_1 = document.getElementById("sus_su_1");
 const sus_su_NOS = document.getElementById("sus_su_NOS");
 //toast(`is_sus_su_exists: ${is_sus_su_exists}`);
-if (is_sus_su_exists=="false"){
+if (is_sus_su_exists==-1){
 	sus_su.removeAttribute("checked");
 	sus_su.setAttribute("disabled","");
 	enable_sus_su.removeAttribute("checked");
@@ -54,13 +56,19 @@ if (is_sus_su_exists=="false"){
 	sus_su_NOS.classList.remove("hidden")
 }
 else{
-	if(susfs_version.includes("1.5.2")){
-		sus_su_152.classList.remove("hidden")
-		sus_su_radio()
+	if(susfs_version.includes("1.5")){
+		if(is_sus_su_exists==1){
+			sus_su_1.classList.remove("hidden")
+		}
+		else{
+			sus_su_142.classList.remove("hidden")
+			sus_su_toggle2(settings);
+		}
+		//sus_su_radio()
 	}
 	else if(susfs_version.includes("1.4.2")){
 		sus_su_142.classList.remove("hidden")
-		sus_su_toggle();
+		sus_su_toggle(settings);
 	}
 }
 
@@ -72,19 +80,20 @@ const H = new Highway.Core({
 });
 
 //execute again after the transition ends
-H.on('NAVIGATE_END', ({ to, from, trigger, location }) => {
+H.on('NAVIGATE_END', async ({ to, from, trigger, location }) => {
+	const settings = catToObject(await run(`su -c "cat ${config}/config.sh"`));
 	var currentPath = window.location.pathname;
     // Add specific script initializations here
     if (currentPath === '/index.html') {
 		console.log("in index");
         keyboard_pop();
 		set_uname();
-		susfs_log_toggle();
-		if(susfs_version.includes("1.5.2") && is_sus_su_exists=="true") sus_su_radio()
-		else if(susfs_version.includes("1.4.2") && is_sus_su_exists=="true") sus_su_toggle();
+		susfs_log_toggle(settings);
+		if(susfs_version.includes("1.5")) sus_su_toggle2(settings);
+		else if(susfs_version.includes("1.4.2")) sus_su_toggle(settings);
     } else if (currentPath === '/custom.html') {
 		//console.log("in custom");
-		custom_toggles();
+		custom_toggles(settings);
 		custom_sus_mount();
 		custom_try_umount();
 		custom_sus_path();
@@ -104,59 +113,109 @@ async function run(cmd) {
 }
 
 //sus_su toggle
-async function sus_su_toggle() {
+async function sus_su_toggle(settings) {
 	const sus_su = document.getElementById("sus_su");
 	const enable_sus_su = document.getElementById("enable_sus_su");
-	var is_enable_sus_su = await run(`su -c "if grep -q '^enable_sus_su$' ${moddir}/service.sh; then echo true; else echo false; fi;"`);
-	var is_sus_su_enable = await run(`su -c "cat ${moddir}/sus_su_enabled"`);
+	//const settings = catToObject(await run(`su -c "cat ${config}/config.sh"`));
+	var is_enable_sus_su = settings.sus_su //await run(`su -c "if grep -q '^enable_sus_su$' ${moddir}/service.sh; then echo true; else echo false; fi;"`);
+	var is_sus_su_enable = settings.sus_su_active //await run(`su -c "cat ${moddir}/sus_su_enabled"`);
 	//toast(`sus_su on boot: ${is_enable_sus_su}`);
 	//toast(`sus_su: ${is_sus_su_enable}`);
-	if(is_enable_sus_su=='true'){
+	if(is_enable_sus_su==1){
 		sus_su.addEventListener("click",function(){
-		if (sus_su.getAttribute("checked")){
+		if (is_sus_su_enable==1){
 			console.log("false")
 			run(`su -c ksu_susfs sus_su 0`)
-			exec(`su -c echo 0 > ${moddir}/sus_su_enabled`)
+			exec(`su -c "sed -i 's/sus_su_active=.*/sus_su_active=0/' ${config}/config.sh"`)
 			toast("sus su off no need to reboot")
 			sus_su.removeAttribute("checked");
 		}
 		else{
 			console.log("true")
 			run(`su -c ksu_susfs sus_su 1`)
-			exec(`su -c echo 1 > ${moddir}/sus_su_enabled`)
+			exec(`su -c "sed -i 's/sus_su_active=.*/sus_su_active=1/' ${config}/config.sh"`)
 			toast("sus su on no need to reboot")
 			sus_su.setAttribute("checked","checked");
 		}
 	});
 	}
 	else{
-		sus_su.removeAttribute("checked");
-		enable_sus_su.removeAttribute("checked");
+		sus_su.checked=false;
+		enable_sus_su.checked=false;
 		sus_su.setAttribute("disabled","");
 	}
-	if(is_sus_su_enable=="0"){
-		sus_su.removeAttribute("checked");
+	if(is_sus_su_enable==0){
+		sus_su.checked=false;
 	}
 	enable_sus_su.addEventListener("click",async function(){
-		if (is_enable_sus_su=='true' && enable_sus_su.getAttribute("checked")){
+		if (is_enable_sus_su==1 && enable_sus_su.checked=="checked"){
 			console.log("false")
 			toast("Reboot to take effect");
-			run(`su -c "sed -i 's/^enable_sus_su$/#enable_sus_su/' ${moddir}/service.sh"`);
-			enable_sus_su.removeAttribute("checked");
+			run(`su -c "sed -i 's/sus_su=.*/sus_su=0/' ${config}/config.sh"`);
+			exec(`su -c "sed -i 's/sus_su_active=.*/sus_su_active=0/' ${config}/config.sh"`)
+			enable_sus_su.checked=false;
 			sus_su.setAttribute("disabled","");
 		}
 		else{
 			console.log("true")
 			toast("Reboot to take effect");
-			run(`su -c "sed -i 's/^#enable_sus_su$/enable_sus_su/' ${moddir}/service.sh"`);
-			enable_sus_su.setAttribute("checked","checked");
+			run(`su -c "sed -i 's/sus_su=.*/sus_su=1/' ${config}/config.sh"`);
+			enable_sus_su.checked="checked";
 			sus_su.removeAttribute("disabled","");
 		}
 	});
 }
 
+async function sus_su_toggle2(settings) {
+	const sus_su = document.getElementById("sus_su");
+	const enable_sus_su = document.getElementById("enable_sus_su");
+	//const settings = catToObject(await run(`su -c "cat ${config}/config.sh"`));
+	var is_enable_sus_su = settings.sus_su //await run(`su -c "if grep -q '^enable_sus_su$' ${moddir}/service.sh; then echo true; else echo false; fi;"`);
+	var is_sus_su_enable = settings.sus_su_active //await run(`su -c "cat ${moddir}/sus_su_enabled"`);
+	//toast(`sus_su on boot: ${is_enable_sus_su}`);
+	//toast(`sus_su: ${is_sus_su_enable}`);
+
+	if(is_enable_sus_su==0){
+		enable_sus_su.checked=false;
+	}
+	if(is_sus_su_enable==0){
+		sus_su.checked=false;
+	}
+
+	sus_su.addEventListener("click",function(){
+	if (is_sus_su_enable==2){
+		console.log("false")
+		run(`su -c ksu_susfs sus_su 0`)
+		exec(`su -c "sed -i 's/sus_su_active=.*/sus_su_active=0/' ${config}/config.sh"`)
+		toast("sus su off no need to reboot")
+		//sus_su.removeAttribute("checked");
+	}
+	else{
+		console.log("true")
+		run(`su -c ksu_susfs sus_su 1`)
+		exec(`su -c "sed -i 's/sus_su_active=.*/sus_su_active=2/' ${config}/config.sh"`)
+		toast("sus su on no need to reboot")
+		//sus_su.setAttribute("checked","checked");
+	}
+	});
+	enable_sus_su.addEventListener("click",async function(){
+		if (is_enable_sus_su==2){
+			console.log("false")
+			toast("Reboot to take effect");
+			run(`su -c "sed -i 's/sus_su=.*/sus_su=0/' ${config}/config.sh"`);
+			//enable_sus_su.checked=false;
+		}
+		else{
+			console.log("true")
+			toast("Reboot to take effect");
+			run(`su -c "sed -i 's/sus_su=.*/sus_su=2/' ${config}/config.sh"`);
+			//enable_sus_su.checked="checked";
+		}
+	});
+}
+
 //sus_su for 1.5.2
-async function sus_su_radio() {
+/*async function sus_su_radio() {
 	const sus_su_0 = document.getElementById("sus_su_0");
 	const sus_su_1 = document.getElementById("sus_su_1");
 	const sus_su_2 = document.getElementById("sus_su_2");
@@ -223,7 +282,7 @@ async function sus_su_radio() {
 			run(`su -c "sed -i 's/^#sus_su_2$/sus_su_2/' ${moddir}/service.sh"`);	
 		}
 	});
-}
+}*/
 
 
 //Toast function
@@ -272,33 +331,36 @@ async function set_uname() {
 }
 
 //susfs log toggle
-async function susfs_log_toggle() {
+async function susfs_log_toggle(settings) {
 	var susfs_log=document.getElementById("susfs_log");
-	var is_susfs_log_enabled=await run(`su -c "grep -q 'enable_log 1' /data/adb/modules/susfs4ksu/service.sh && echo true || echo false"`);
+	//var is_susfs_log_enabled=await run(`su -c "grep -q 'enable_log 1' /data/adb/modules/susfs4ksu/service.sh && echo true || echo false"`);
 	//toast(`is susfs log enabled: ${is_susfs_log_enabled}`);
-	susfs_log.addEventListener("click",async function() {
-		if(susfs_log.hasAttribute("checked")){
-			console.log("false")
-			toast("Reboot to take effect");
-			await run(`su -c "sed -i 's/enable_log 1/enable_log 0/' ${moddir}/service.sh"`);
-			susfs_log.removeAttribute("checked");
-		}
-		else{
-			console.log("true")
-			toast("Reboot to take effect");
-			await run(`su -c "sed -i 's/enable_log 0/enable_log 1/' ${moddir}/service.sh"`);
-			susfs_log.setAttribute("checked","checked");
-		}
-	})
-	if(is_susfs_log_enabled=="false"){
+	//const settings = catToObject(await run(`su -c "cat ${config}/config.sh"`));
+	const is_susfs_log_enabled = settings.susfs_log === 1;
+	
+	// Set initial state first
+	if(is_susfs_log_enabled) {
+		susfs_log.setAttribute("checked", "checked");
+	} else {
 		susfs_log.removeAttribute("checked");
 	}
-	else{
-		susfs_log.setAttribute("checked","checked");
-	}
+	
+	susfs_log.addEventListener("click", async function() {
+		if(susfs_log.hasAttribute("checked")) {
+			console.log("false");
+			toast("Reboot to take effect");
+			await run(`su -c "sed -i 's/susfs_log=1/susfs_log=0/' ${config}/config.sh"`);
+			susfs_log.removeAttribute("checked");
+		} else {
+			console.log("true");
+			toast("Reboot to take effect");
+			await run(`su -c "sed -i 's/susfs_log=0/susfs_log=1/' ${config}/config.sh"`);
+			susfs_log.setAttribute("checked", "checked");
+		}
+	});
 }
 
-async function custom_toggles() {
+async function custom_toggles(settings) {
 	const hide_custom_rom = document.getElementById("hide_custom_rom");
 	const more_custom_rom = document.getElementById("more_custom_rom");
 	const hide_gapps = document.getElementById("hide_gapps");
@@ -308,17 +370,10 @@ async function custom_toggles() {
 	const force_hide_lsposed = document.getElementById("force_hide_lsposed");
 	const hide_vendor_sepolicy = document.getElementById("hide_vendor_sepolicy");
 	const hide_compat_matrix = document.getElementById("hide_compat_matrix");
-	var config_sh = await run(`su -c "cat ${config}/config.sh"`);
+	//var config_sh = await run(`su -c "cat ${config}/config.sh"`);
 
 	// Convert the string content to an object
-	const custom_settings = config_sh
-	.split('\n')                    // Split into lines
-	.filter(line => line.includes('='))  // Filter valid lines
-	.reduce((acc, line) => {
-		const [key, value] = line.split('=').map(str => str.trim());
-		acc[key] = value === '1' ? true : value === '0' ? false : value; // Map values
-		return acc;
-	}, {});
+	const custom_settings = settings;
 
 	if (custom_settings.hide_cusrom==true){
 		hide_custom_rom.checked="checked";
@@ -353,8 +408,8 @@ async function custom_toggles() {
 			toast("Reboot to take effect");
 		}
 		else {
-			if (await run(`su -c "grep -q 'hide_cusrom' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_cusrom=1' >> ${config}/config.sh"`)
-			else run (`su -c "sed -i 's/hide_cusrom=0/hide_cusrom=1/' ${config}/config.sh"`)
+			//if (await run(`su -c "grep -q 'hide_cusrom' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_cusrom=1' >> ${config}/config.sh"`)
+			/*else*/ run (`su -c "sed -i 's/hide_cusrom=0/hide_cusrom=1/' ${config}/config.sh"`)
 			custom_settings.hide_cusrom=true
 			more_custom_rom.classList.remove("hidden");
 			toast("Reboot to take effect");
@@ -369,8 +424,8 @@ async function custom_toggles() {
 			toast("Reboot to take effect");
 		}
 		else {
-			if (await run(`su -c "grep -q 'hide_vendor_sepolicy' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_vendor_sepolicy=1' >> ${config}/config.sh"`)
-			else run (`su -c "sed -i 's/hide_vendor_sepolicy=0/hide_vendor_sepolicy=1/' ${config}/config.sh"`)
+			//if (await run(`su -c "grep -q 'hide_vendor_sepolicy' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_vendor_sepolicy=1' >> ${config}/config.sh"`)
+			/*else*/ run (`su -c "sed -i 's/hide_vendor_sepolicy=0/hide_vendor_sepolicy=1/' ${config}/config.sh"`)
 			custom_settings.hide_vendor_sepolicy=true
 			toast("Reboot to take effect");
 		}
@@ -384,8 +439,8 @@ async function custom_toggles() {
 			toast("Reboot to take effect");
 		}
 		else {
-			if (await run(`su -c "grep -q 'hide_compat_matrix' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_compat_matrix=1' >> ${config}/config.sh"`)
-			else run (`su -c "sed -i 's/hide_compat_matrix=0/hide_compat_matrix=1/' ${config}/config.sh"`)
+			/*if (await run(`su -c "grep -q 'hide_compat_matrix' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_compat_matrix=1' >> ${config}/config.sh"`)
+			else*/ run (`su -c "sed -i 's/hide_compat_matrix=0/hide_compat_matrix=1/' ${config}/config.sh"`)
 			custom_settings.hide_compat_matrix=true
 			toast("Reboot to take effect");
 		}
@@ -399,8 +454,8 @@ async function custom_toggles() {
 			toast("Reboot to take effect");
 		}
 		else {
-			if (await run(`su -c "grep -q 'hide_gapps' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_gapps=1' >> ${config}/config.sh"`)
-			else await run(`su -c "sed -i 's/hide_gapps=0/hide_gapps=1/' ${config}/config.sh"`)
+			/*if (await run(`su -c "grep -q 'hide_gapps' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_gapps=1' >> ${config}/config.sh"`)
+			else*/ await run(`su -c "sed -i 's/hide_gapps=0/hide_gapps=1/' ${config}/config.sh"`)
 			custom_settings.hide_gapps==true
 			toast("Reboot to take effect");
 		}
@@ -414,8 +469,8 @@ async function custom_toggles() {
 			toast("Reboot to take effect");
 		}
 		else {
-			if (await run(`su -c "grep -q 'hide_revanced' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_revanced=1' >> ${config}/config.sh"`)
-			else await run(`su -c "sed -i 's/hide_revanced=0/hide_revanced=1/' ${config}/config.sh"`)
+			/*if (await run(`su -c "grep -q 'hide_revanced' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_revanced=1' >> ${config}/config.sh"`)
+			else*/ await run(`su -c "sed -i 's/hide_revanced=0/hide_revanced=1/' ${config}/config.sh"`)
 			custom_settings.hide_revanced=true
 			toast("Reboot to take effect");
 		}
@@ -429,8 +484,8 @@ async function custom_toggles() {
 			toast("Reboot to take effect");
 		}
 		else {
-			if (await run(`su -c "grep -q 'spoof_cmdline' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'spoof_cmdline=1' >> ${config}/config.sh"`)
-			else await run(`su -c "sed -i 's/spoof_cmdline=0/spoof_cmdline=1/' ${config}/config.sh"`)
+			/*if (await run(`su -c "grep -q 'spoof_cmdline' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'spoof_cmdline=1' >> ${config}/config.sh"`)
+			else*/ await run(`su -c "sed -i 's/spoof_cmdline=0/spoof_cmdline=1/' ${config}/config.sh"`)
 			custom_settings.spoof_cmdline=true
 			toast("Reboot to take effect");
 		}
@@ -444,8 +499,8 @@ async function custom_toggles() {
 			toast("Reboot to take effect");
 		}
 		else {
-			if (await run(`su -c "grep -q 'hide_loops' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_loops=1' >> ${config}/config.sh"`)
-			else await run(`su -c "sed -i 's/hide_loops=0/hide_loops=1/' ${config}/config.sh"`)
+			/*if (await run(`su -c "grep -q 'hide_loops' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_loops=1' >> ${config}/config.sh"`)
+			else*/ await run(`su -c "sed -i 's/hide_loops=0/hide_loops=1/' ${config}/config.sh"`)
 			custom_settings.hide_loops=true
 			toast("Reboot to take effect");
 		}
@@ -460,8 +515,8 @@ async function custom_toggles() {
 			toast("Reboot to take effect");
 		}
 		else {
-			if (await run(`su -c "grep -q 'force_hide_lsposed' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'force_hide_lsposed=1' >> ${config}/config.sh"`)
-			else await run(`su -c "sed -i 's/force_hide_lsposed=0/force_hide_lsposed=1/' ${config}/config.sh"`)
+			/*if (await run(`su -c "grep -q 'force_hide_lsposed' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'force_hide_lsposed=1' >> ${config}/config.sh"`)
+			else*/ await run(`su -c "sed -i 's/force_hide_lsposed=0/force_hide_lsposed=1/' ${config}/config.sh"`)
 			custom_settings.force_hide_lsposed=true
 			toast("Reboot to take effect");
 		}
@@ -495,7 +550,7 @@ async function custom_sus_mount(){
 	const load_sus_mount = document.getElementById("load_sus_mount");
 	const sus_mount_area = document.getElementById("custom_sus_mount");
 	const save_sus_mount = document.getElementById("save_sus_mount");
-	const mainContainer = document.querySelector('main');
+	//const mainContainer = document.querySelector('main');
 
 	load_sus_mount.addEventListener("click",async ()=>{
 		sus_mount_area.innerHTML=await run(`su -c "cat ${config}/sus_mount.txt"`);
@@ -580,4 +635,4 @@ inputBox.addEventListener('blur', () => {
 //susfsstats();
 set_uname()
 keyboard_pop();
-susfs_log_toggle();
+susfs_log_toggle(settings);
