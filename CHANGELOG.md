@@ -1,3 +1,6 @@
+## v1.4.2 Revision 4
+* Revert props command from susfs_hexpatch_props to resetprop
+
 ## v1.4.2 Revision 3
 * Add related props from Shamiko using susfs_hexpatch_props
 * Add VerifiedBootHash directory for devices with missing `ro.boot.vbmeta.digest` value
