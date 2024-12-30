@@ -38,11 +38,11 @@ enable_sus_su(){
 enable_sus_su
 
 if_sus_su_disabled(){
-  if grep -q '#enable_sus_su' $MODDIR/service.sh; then
+  if grep -q '^#enable_sus_su$' $MODDIR/service.sh; then
     if ! ${SUSFS_BIN} sus_su 0; then
       return
     fi
-    echo 0 > ${MODDIR}/sus_su_enabled
+    echo 0 > ${MODDIR}/sus_su_enabled;
   fi
 }
 
