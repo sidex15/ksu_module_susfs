@@ -13,7 +13,7 @@ hide_revanced=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
 # update description
-if dmesg | grep -q "susfs:"; then
+if [ -f $tmpfolder/logs/susfs_active ] || dmesg | grep -q "susfs:"; then
 	description="description=status: ✅ SuS ඞ "
 else
 	description="description=status: failed 💢 - Make sure you're on a SuSFS patched kernel! 😭"
