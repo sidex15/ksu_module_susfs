@@ -11,6 +11,12 @@ logfile1="$tmpfolder/logs/susfs1.log"
 
 dmesg | grep -q "susfs:" > /dev/null && touch $tmpfolder/logs/susfs_active
 
+# for people that is on legacy with broken dmesg or disabled logging
+# actually first, fuck you
+# second, heres your override
+# touch /data/adb/susfs4ksu/susfs_force_override
+[ -f $PERSISTENT_DIR/susfs_force_override ] && touch $tmpfolder/logs/susfs_active
+
 force_hide_lsposed=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
