@@ -162,7 +162,7 @@ async function sus_su_radio() {
 	const sus_su_2 = document.getElementById("sus_su_2");
 	const enable_sus_su_1 = document.getElementById("enable_sus_su_1");
 	const enable_sus_su_2 = document.getElementById("enable_sus_su_2");
-	var is_sus_su_mode_1 = await run(`su -c "if grep -q '^enable_sus_su_mode_1$' ${moddir}/service.sh; then echo true; else echo false; fi;"`);
+	var is_sus_su_mode_1 = await run(`su -c "if grep -q '^enable_sus_su_mode_1$' ${moddir}/post-fs-data.sh; then echo true; else echo false; fi;"`);
 	var is_sus_su_mode_2 = await run(`su -c "if grep -q '^sus_su_2$' ${moddir}/service.sh; then echo true; else echo false; fi;"`);
 	var is_sus_su_mode = await run(`su -c "cat ${moddir}/sus_su_mode"`);
 	//toast(`sus_su on boot: ${is_sus_su_mode_1}`);
