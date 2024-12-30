@@ -74,7 +74,7 @@ contains_reset_prop "vendor.boot.bootmode" "recovery" "unknown"
 # Set vbmeta verifiedBootHash from file (if present and not empty)
 HASH_FILE="/data/adb/VerifiedBootHash/VerifiedBootHash.txt"
 if [ -s "$HASH_FILE" ]; then
-    resetprop -v -n ro.boot.vbmeta.digest "$(tr '[:upper:]' '[:lower:]' <"$HASH_FILE")"
+    resetprop -v -n ro.boot.vbmeta.digest "$(cat $HASH_FILE)"
 fi
 
 # Holmes 1.5+ Futile Trace Hide
@@ -83,3 +83,14 @@ for device in $(ls -Ld /proc/fs/jbd2/loop*8 | sed 's|/proc/fs/jbd2/||; s|-8||');
 	${SUSFS_BIN} add_sus_path /proc/fs/jbd2/${device}-8
 	${SUSFS_BIN} add_sus_path /proc/fs/ext4/${device}
 done
+
+# clean vendor sepolicy
+# evades reveny's native detector and native test conventional test (10)
+grep -q lineage /vendor/etc/selinux/vendor_sepolicy.cil && {
+	grep -v "lineage" /vendor/etc/selinux/vendor_sepolicy.cil > /debug_ramdisk/vendor_sepolicy.cil
+	${SUSFS_BIN} add_sus_kstat /vendor/etc/selinux/vendor_sepolicy.cil
+	susfs_clone_perm /debug_ramdisk/vendor_sepolicy.cil /vendor/etc/selinux/vendor_sepolicy.cil
+	mount --bind /debug_ramdisk/vendor_sepolicy.cil /vendor/etc/selinux/vendor_sepolicy.cil
+	${SUSFS_BIN} update_sus_kstat /vendor/etc/selinux/vendor_sepolicy.cil
+	${SUSFS_BIN} add_sus_mount /vendor/etc/selinux/vendor_sepolicy.cil
+}
