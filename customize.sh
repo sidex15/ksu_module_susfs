@@ -19,6 +19,25 @@ fi
 chmod 755 ${DEST_BIN_DIR}/ksu_susfs ${DEST_BIN_DIR}/sus_su
 chmod 644 ${MODPATH}/post-fs-data.sh ${MODPATH}/service.sh ${MODPATH}/uninstall.sh
 
+prop_value=$(getprop ro.boot.vbmeta.digest)
+HASH_DIR=/data/adb/VerifiedBootHash
+
+if [ -z "$prop_value" ]; then
+    ui_print "Property ro.boot.vbmeta.digest is empty, generate VerifiedBootHash directory"
+	if [ ! -d "$HASH_DIR" ]; then
+	  ui_print "- Creating VerifiedBootHash directory"
+	  mkdir -p "$HASH_DIR"
+	  [ ! -f "$HASH_DIR/VerifiedBootHash.txt" ] && touch "$HASH_DIR/VerifiedBootHash.txt"
+	fi
+	ui_print "*********************************************************"
+	ui_print "! Please copy your VerifiedBootHash in Key Attestation demo"
+	ui_print "! And Paste it to /data/adb/VerifiedBootHash/VerifiedBootHash.txt"
+	ui_print "*********************************************************"
+else
+    ui_print "Property ro.boot.vbmeta.digest has a value, skipping VerifiedBootHash creation"
+fi
+
+
 rm -rf ${MODPATH}/tools
 rm ${MODPATH}/customize.sh ${MODPATH}/README.md
 
