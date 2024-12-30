@@ -3,8 +3,7 @@ MODDIR=/data/adb/modules/susfs4ksu
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 source ${MODDIR}/utils.sh
 PERSISTENT_DIR=/data/adb/susfs4ksu
-tmpfolder=/data/adb/susfs4ksu
-tmpcustomrom=/debug_ramdisk/susfs4ksu
+tmpfolder=/debug_ramdisk/susfs4ksu
 logfile="$tmpfolder/logs/susfs.log"
 logfile1="$tmpfolder/logs/susfs1.log"
 
@@ -27,11 +26,13 @@ sed -i "s/^description=.*/$description/g" $MODDIR/module.prop
 
 # echo "hide_cusrom=1" >> /data/adb/susfs4ksu/config.sh
 [ $hide_cusrom = 1 ] && {
-	echo "susfs4ksu/boot-completed: [hide_cusrom]" >> $logfile1
-	for i in $(find /system /vendor /system_ext /product -iname *lineage* -o -name *crdroid* ) ; do 
-		${SUSFS_BIN} add_sus_path $i 
-		echo "[sus_path]: susfs4ksu/boot-completed $i" >> $logfile1
-	done
+    echo "susfs4ksu/boot-completed: [hide_cusrom]" >> $logfile1
+    
+    # Find lineage and crdroid paths
+    find /system /vendor /system_ext /product -type f -o -type d | grep -iE "lineage|crdroid" | while read -r path; do
+        ${SUSFS_BIN} add_sus_path "$path"
+        echo "[sus_path]: susfs4ksu/boot-completed $path" >> "$logfile1"
+    done
 }
 
 # echo "hide_gapps=1" >> /data/adb/susfs4ksu/config.sh
