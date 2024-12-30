@@ -1,7 +1,7 @@
-#!/system/bin/sh
+#!/bin/sh
 MODDIR=/data/adb/modules/susfs4ksu
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
-source ${MODDIR}/utils.sh
+. ${MODDIR}/utils.sh
 PERSISTENT_DIR=/data/adb/susfs4ksu
 tmpfolder=/data/adb/susfs4ksu
 tmpcustomrom=/debug_ramdisk/susfs4ksu
@@ -10,7 +10,12 @@ mkdir -p $tmpcustomrom
 logfile="$tmpfolder/logs/susfs.log"
 logfile1="$tmpfolder/logs/susfs1.log"
 
-dmesg | grep -q "susfs:" > /dev/null && touch $tmpfolder/logs/susfs_active
+# use 1.5.3+ feature
+if [ $(${SUSFS_BIN} show version | head -n1 | sed 's/v//; s/\.//g') -ge 153 ]; then
+	touch $tmpfolder/logs/susfs_active
+else
+	dmesg | grep -q "susfs:" > /dev/null && touch $tmpfolder/logs/susfs_active
+fi
 
 force_hide_lsposed=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
