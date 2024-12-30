@@ -9,6 +9,9 @@ source ${MODDIR}/utils.sh
 #modules for mounting system
 ${SUSFS_BIN} add_sus_mount /system
 
+#modules for mounting /system/etc
+${SUSFS_BIN} add_sus_mount /system/etc
+
 #modules for mounting /product
 ${SUSFS_BIN} add_sus_mount /product
 
