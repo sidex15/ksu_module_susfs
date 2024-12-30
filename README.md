@@ -4,7 +4,7 @@ This module installs a userspace helper tool called **ksu_susfs** and **sus_su**
 This module provides root hiding for KernelSU on the kernel level.
 
 ## Notes
-- Make sure you have a custom kernel with SUSFS patched in it. Check the custom kernel source to see if it has SUS-FS.
+- Make sure you have a custom kernel with SUSFS patched in it. Check the custom kernel source to see if it has SUSFS.
 - Make sure the kernel is using SUSFS 1.4.2/1.5.2 for effective hide.
 - Do not mix/install with other root-hiding modules such as shamiko or zygisk assistant.
 - HideMyApplist is acceptable
