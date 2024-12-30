@@ -5,6 +5,7 @@ SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 
 source ${MODDIR}/utils.sh
 
+
 ## sus_su ##
 enable_sus_su(){
         ## Create a 'overlay' folder in module root directory for storing the 'su' and sus_su_drv_path in /system/bin/ ##
@@ -30,13 +31,46 @@ enable_sus_su(){
 
 ## Enable sus_su ##
 ## Uncomment this if you are using kprobe hooks ksu, make sure CONFIG_KSU_SUSFS_SUS_SU config is enabled when compiling kernel ##
-#enable_sus_su
+enable_sus_su
 
 ## Disable susfs kernel log ##
 #${SUSFS_BIN} enable_log 0
 
-## Hide for Systemless host for ksu ##
-# right timing for hide mount of /system/etc so it doesn't trigger futile hide
-sleep 1s
-${SUSFS_BIN} add_sus_mount /system/etc
-${SUSFS_BIN} add_try_umount /system/etc 1
+## Props ##
+resetprop -w sys.boot_completed 0
+
+susfs_hexpatch_props "ro.boot.vbmeta.device_state" "locked"
+susfs_hexpatch_props "ro.boot.verifiedbootstate" "green"
+susfs_hexpatch_props "ro.boot.flash.locked" "1"
+susfs_hexpatch_props "ro.boot.veritymode" "enforcing"
+susfs_hexpatch_props "ro.boot.warranty_bit" "0"
+susfs_hexpatch_props "ro.warranty_bit" "0"
+susfs_hexpatch_props "ro.debuggable" "0"
+susfs_hexpatch_props "ro.force.debuggable" "0"
+susfs_hexpatch_props "ro.secure" "1"
+susfs_hexpatch_props "ro.adb.secure" "1"
+susfs_hexpatch_props "ro.build.type" "user"
+susfs_hexpatch_props "ro.build.tags" "release-keys"
+susfs_hexpatch_props "ro.vendor.boot.warranty_bit" "0"
+susfs_hexpatch_props "ro.vendor.warranty_bit" "0"
+susfs_hexpatch_props "vendor.boot.vbmeta.device_state" "locked"
+susfs_hexpatch_props "vendor.boot.verifiedbootstate" "green"
+susfs_hexpatch_props "sys.oem_unlock_allowed" "0"
+
+# MIUI specific
+susfs_hexpatch_props "ro.secureboot.lockstate" "locked"
+
+# Realme specific
+susfs_hexpatch_props "ro.boot.realmebootstate" "green"
+susfs_hexpatch_props "ro.boot.realme.lockstate" "1"
+
+# Hide that we booted from recovery when magisk is in recovery mode
+susfs_hexpatch_props "ro.bootmode" "recovery" "unknown"
+susfs_hexpatch_props "ro.boot.bootmode" "recovery" "unknown"
+susfs_hexpatch_props "vendor.boot.bootmode" "recovery" "unknown"
+
+# Set vbmeta verifiedBootHash from file (if present and not empty)
+HASH_FILE="/data/adb/VerifiedBootHash/VerifiedBootHash.txt"
+if [ -s "$HASH_FILE" ]; then
+    resetprop -v -n ro.boot.vbmeta.digest "$(tr '[:upper:]' '[:lower:]' <"$HASH_FILE")"
+fi
