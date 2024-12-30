@@ -6,37 +6,50 @@ SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 source ${MODDIR}/utils.sh
 
 
-## sus_su ##
-enable_sus_su(){
-        ## Create a 'overlay' folder in module root directory for storing the 'su' and sus_su_drv_path in /system/bin/ ##
-        SYSTEM_OL=${MODDIR}/overlay
-        rm -rf ${SYSTEM_OL}  2>/dev/null
-        mkdir -p ${SYSTEM_OL}/system_bin 2>/dev/null
-         ## Enable sus_su or abort the function if sus_su is not supported ##
-        if ! ${SUSFS_BIN} sus_su 1; then
-        return
-        fi
-        ## Copy the new generated sus_su_drv_path and 'sus_su' to /system/bin/ and rename 'sus_su' to 'su' ##
-        cp -f /data/adb/ksu/bin/sus_su ${SYSTEM_OL}/system_bin/su
-        cp -f /data/adb/ksu/bin/sus_su_drv_path ${SYSTEM_OL}/system_bin/sus_su_drv_path
-		## Generate sus_su_enabled flag ##
-		touch ${MODDIR}/sus_su_enabled
-        ## Setup permission ##
-        susfs_clone_perm ${SYSTEM_OL}/system_bin /system/bin
-        susfs_clone_perm ${SYSTEM_OL}/system_bin/su /system/bin/sh
-        susfs_clone_perm ${SYSTEM_OL}/system_bin/sus_su_drv_path /system/bin/sh
-        ## Mount the overlay ##
-        mount -t overlay KSU -o "lowerdir=${SYSTEM_OL}/system_bin:/system/bin" /system/bin
-        ## Hide the mountpoint ##
-        ${SUSFS_BIN} add_sus_mount /system/bin
-        ## Umount it for no root granted process ##
-        ${SUSFS_BIN} add_try_umount /system/bin 1
+#### Enable sus_su ####
+enable_sus_su_mode_1(){
+  ## Here we manually create an system overlay an copy the sus_su and sus_su_drv_path to ${MODDIR}/system/bin after sus_su is enabled,
+  ## as ksu overlay script is executed after all post-fs-data.sh scripts are finished
+
+  rm -rf ${MODDIR}/system 2>/dev/null
+  # Enable sus_su or abort the function if sus_su is not supported #
+  if ! ${SUSFS_BIN} sus_su 1; then
+    return false
+  fi
+  mkdir -p ${MODDIR}/system/bin 2>/dev/null
+  # Copy the new generated sus_su_drv_path and 'sus_su' to /system/bin/ and rename 'sus_su' to 'su' #
+  cp -f /data/adb/ksu/bin/sus_su ${MODDIR}/system/bin/su
+  cp -f /data/adb/ksu/bin/sus_su_drv_path ${MODDIR}/system/bin/sus_su_drv_path
+  echo 1 > ${MODDIR}/sus_su_mode
+  return true
+}
+# uncomment it below to enable sus_su with mode 1 #
+#enable_sus_su_mode_1
+
+# SUS_SU 2#
+sus_su_2(){
+  if ! ${SUSFS_BIN} sus_su 2; then
+    return false
+  fi
+echo 2 > ${MODDIR}/sus_su_mode
+return true
 }
 
-## Enable sus_su ##
-## Uncomment this if you are using kprobe hooks ksu, make sure CONFIG_KSU_SUSFS_SUS_SU config is enabled when compiling kernel ##
-enable_sus_su
+# uncomment it below to enable sus_su with mode 2 #
+sus_su_2
 
+if_both_sus_su_disabled(){
+	if grep -q '#enable_sus_su_mode_1' $MODDIR/service.sh && grep -q "#sus_su_2" $MODDIR/service.sh; then
+		if ! ${SUSFS_BIN} sus_su 0; then
+			return
+		fi
+		echo 0 > ${MODDIR}/sus_su_mode
+	fi
+}
+
+# if both sus_su are disabled (Do not remove)#
+if_both_sus_su_disabled
+	
 ## Disable susfs kernel log ##
 ${SUSFS_BIN} enable_log 1
 
