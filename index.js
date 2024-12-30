@@ -303,16 +303,19 @@ async function custom_toggles() {
 	const force_hide_lsposed = document.getElementById("force_hide_lsposed");
 	const hide_vendor_sepolicy = document.getElementById("hide_vendor_sepolicy");
 	const hide_compat_matrix = document.getElementById("hide_compat_matrix");
-	var custom_rom_toggle = await run(`su -c "grep -q 'hide_cusrom=1' ${config}/config.sh && echo true || echo false"`);
-	var vendor_sepolicy_toggle = await run(`su -c "grep -q 'hide_vendor_sepolicy=1' ${config}/config.sh && echo true || echo false"`);
-	var compat_matrix_toggle = await run(`su -c "grep -q 'hide_compat_matrix=1' ${config}/config.sh && echo true || echo false"`);
-	var gapps_toggle = await run(`su -c "grep -q 'hide_gapps=1' ${config}/config.sh && echo true || echo false"`);
-	var revanced_toggle = await run(`su -c "grep -q 'hide_revanced=1' ${config}/config.sh && echo true || echo false"`);
-	var cmdline_toggle = await run(`su -c "grep -q 'spoof_cmdline=1' ${config}/config.sh && echo true || echo false"`);
-	var loops_toggle = await run(`su -c "grep -q 'hide_loops=1' ${config}/config.sh && echo true || echo false"`);
-	var lsposed_toggle = await run(`su -c "grep -q 'force_hide_lsposed=1' ${config}/config.sh && echo true || echo false"`);
+	var config_sh = await run(`su -c "cat ${config}/config.sh"`);
 
-	if (custom_rom_toggle=="true"){
+	// Convert the string content to an object
+	const custom_settings = config_sh
+	.split('\n')                    // Split into lines
+	.filter(line => line.includes('='))  // Filter valid lines
+	.reduce((acc, line) => {
+		const [key, value] = line.split('=').map(str => str.trim());
+		acc[key] = value === '1' ? true : value === '0' ? false : value; // Map values
+		return acc;
+	}, {});
+
+	if (custom_settings.hide_cusrom==true){
 		hide_custom_rom.checked="checked";
 		more_custom_rom.classList.remove("hidden");
 	}
@@ -320,125 +323,141 @@ async function custom_toggles() {
 		hide_custom_rom.checked=false
 		more_custom_rom.classList.add("hidden");
 	}
-	if (vendor_sepolicy_toggle=="true") hide_vendor_sepolicy.checked="checked";
+	if (custom_settings.hide_vendor_sepolicy==true) hide_vendor_sepolicy.checked="checked";
 	else hide_vendor_sepolicy.checked=false;
-	if (compat_matrix_toggle=="true") hide_compat_matrix.checked="checked";
+	if (custom_settings.hide_compat_matrix==true) hide_compat_matrix.checked="checked";
 	else hide_compat_matrix.checked=false;
-	if (gapps_toggle=="true") hide_gapps.checked="checked";
+	if (custom_settings.hide_gapps==true) hide_gapps.checked="checked";
 	else hide_gapps.checked=false;
-	if (revanced_toggle=="true") hide_revanced.checked="checked";
+	if (custom_settings.hide_revanced==true) hide_revanced.checked="checked";
 	else hide_revanced.checked=false;
-	if (cmdline_toggle=="true") spoof_cmdline.checked="checked";
+	if (custom_settings.spoof_cmdline==true) spoof_cmdline.checked="checked";
 	else spoof_cmdline.checked=false;
-	if (loops_toggle=="true") hide_ksu_loop.checked="checked";
+	if (custom_settings.hide_loops==true) hide_ksu_loop.checked="checked";
 	else hide_ksu_loop.checked=false;
-	if (lsposed_toggle=="true") force_hide_lsposed.checked="checked";
+	if (custom_settings.force_hide_lsposed==true) force_hide_lsposed.checked="checked";
 	else force_hide_lsposed.checked=false;
 
 	hide_custom_rom.addEventListener("click",async function (){
-		var custom_rom_toggle = await run(`su -c "grep -q 'hide_cusrom=1' ${config}/config.sh && echo true || echo false"`);
+		//var vendor_sepolicy_toggle = await run(`su -c "grep -q 'hide_cusrom=1' ${config}/config.sh && echo true || echo false"`);
 		const more_custom_rom = document.getElementById("more_custom_rom");
-		if (custom_rom_toggle=="true"){
+		if (custom_settings.hide_cusrom==true){
 			run(`su -c "sed -i 's/hide_cusrom=1/hide_cusrom=0/' ${config}/config.sh"`)
+			custom_settings.hide_cusrom=false
 			more_custom_rom.classList.add("hidden");
 			toast("Reboot to take effect");
 		}
 		else {
 			if (await run(`su -c "grep -q 'hide_cusrom' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_cusrom=1' >> ${config}/config.sh"`)
 			else run (`su -c "sed -i 's/hide_cusrom=0/hide_cusrom=1/' ${config}/config.sh"`)
+			custom_settings.hide_cusrom=true
 			more_custom_rom.classList.remove("hidden");
 			toast("Reboot to take effect");
 		}
 	});
 
 	hide_vendor_sepolicy.addEventListener("click",async function (){
-		var vendor_sepolicy_toggle = await run(`su -c "grep -q 'hide_vendor_sepolicy=1' ${config}/config.sh && echo true || echo false"`);
-		if (vendor_sepolicy_toggle=="true"){
+		//var vendor_sepolicy_toggle = await run(`su -c "grep -q 'hide_vendor_sepolicy=1' ${config}/config.sh && echo true || echo false"`);
+		if (custom_settings.hide_vendor_sepolicy==true){
 			run(`su -c "sed -i 's/hide_vendor_sepolicy=1/hide_vendor_sepolicy=0/' ${config}/config.sh"`)
+			custom_settings.hide_vendor_sepolicy=false
 			toast("Reboot to take effect");
 		}
 		else {
 			if (await run(`su -c "grep -q 'hide_vendor_sepolicy' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_vendor_sepolicy=1' >> ${config}/config.sh"`)
 			else run (`su -c "sed -i 's/hide_vendor_sepolicy=0/hide_vendor_sepolicy=1/' ${config}/config.sh"`)
+			custom_settings.hide_vendor_sepolicy=true
 			toast("Reboot to take effect");
 		}
 	});
 
 	hide_compat_matrix.addEventListener("click",async function (){
-		var compat_matrix_toggle = await run(`su -c "grep -q 'hide_compat_matrix=1' ${config}/config.sh && echo true || echo false"`);
-		if (compat_matrix_toggle=="true"){
+		//var compat_matrix_toggle = await run(`su -c "grep -q 'hide_compat_matrix=1' ${config}/config.sh && echo true || echo false"`);
+		if (custom_settings.hide_compat_matrix==true){
 			run(`su -c "sed -i 's/hide_compat_matrix=1/hide_compat_matrix=0/' ${config}/config.sh"`)
+			custom_settings.hide_compat_matrix=false
 			toast("Reboot to take effect");
 		}
 		else {
 			if (await run(`su -c "grep -q 'hide_compat_matrix' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_compat_matrix=1' >> ${config}/config.sh"`)
 			else run (`su -c "sed -i 's/hide_compat_matrix=0/hide_compat_matrix=1/' ${config}/config.sh"`)
+			custom_settings.hide_compat_matrix=true
 			toast("Reboot to take effect");
 		}
 	});
 
 	hide_gapps.addEventListener("click",async function (){
-		var gapps_toggle = await run(`su -c "grep -q 'hide_gapps=1' ${config}/config.sh && echo true || echo false"`);
-		if (gapps_toggle=="true"){
+		//var gapps_toggle = await run(`su -c "grep -q 'hide_gapps=1' ${config}/config.sh && echo true || echo false"`);
+		if (custom_settings.hide_gapps==true){
 			await run(`su -c "sed -i 's/hide_gapps=1/hide_gapps=0/' ${config}/config.sh"`)
+			custom_settings.hide_gapps=false
 			toast("Reboot to take effect");
 		}
 		else {
 			if (await run(`su -c "grep -q 'hide_gapps' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_gapps=1' >> ${config}/config.sh"`)
 			else await run(`su -c "sed -i 's/hide_gapps=0/hide_gapps=1/' ${config}/config.sh"`)
+			custom_settings.hide_gapps==true
 			toast("Reboot to take effect");
 		}
 	});
 
 	hide_revanced.addEventListener("click",async function (){
-		var revanced_toggle = await run(`su -c "grep -q 'hide_revanced=1' ${config}/config.sh && echo true || echo false"`);
-		if (revanced_toggle=="true"){
+		//var revanced_toggle = await run(`su -c "grep -q 'hide_revanced=1' ${config}/config.sh && echo true || echo false"`);
+		if (custom_settings.hide_revanced==true){
 			await run(`su -c "sed -i 's/hide_revanced=1/hide_revanced=0/' ${config}/config.sh"`)
+			custom_settings.hide_revanced=false
 			toast("Reboot to take effect");
 		}
 		else {
 			if (await run(`su -c "grep -q 'hide_revanced' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_revanced=1' >> ${config}/config.sh"`)
 			else await run(`su -c "sed -i 's/hide_revanced=0/hide_revanced=1/' ${config}/config.sh"`)
+			custom_settings.hide_revanced=true
 			toast("Reboot to take effect");
 		}
 	});
 
 	spoof_cmdline.addEventListener("click",async function (){
-		var cmdline_toggle = await run(`su -c "grep -q 'spoof_cmdline=1' ${config}/config.sh && echo true || echo false"`);
-		if (cmdline_toggle=="true"){
+		//var cmdline_toggle = await run(`su -c "grep -q 'spoof_cmdline=1' ${config}/config.sh && echo true || echo false"`);
+		if (custom_settings.spoof_cmdline==true){
 			await run(`su -c "sed -i 's/spoof_cmdline=1/spoof_cmdline=0/' ${config}/config.sh"`)
+			custom_settings.spoof_cmdline=false
 			toast("Reboot to take effect");
 		}
 		else {
 			if (await run(`su -c "grep -q 'spoof_cmdline' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'spoof_cmdline=1' >> ${config}/config.sh"`)
 			else await run(`su -c "sed -i 's/spoof_cmdline=0/spoof_cmdline=1/' ${config}/config.sh"`)
+			custom_settings.spoof_cmdline=true
 			toast("Reboot to take effect");
 		}
 	});
 
 	hide_ksu_loop.addEventListener("click",async function (){
-		var loops_toggle = await run(`su -c "grep -q 'hide_loops=1' ${config}/config.sh && echo true || echo false"`);
-		if (loops_toggle=="true"){
+		//var loops_toggle = await run(`su -c "grep -q 'hide_loops=1' ${config}/config.sh && echo true || echo false"`);
+		if (custom_settings.hide_loops==true){
 			await run(`su -c "sed -i 's/hide_loops=1/hide_loops=0/' ${config}/config.sh"`)
+			custom_settings.hide_loops=false
 			toast("Reboot to take effect");
 		}
 		else {
 			if (await run(`su -c "grep -q 'hide_loops' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_loops=1' >> ${config}/config.sh"`)
 			else await run(`su -c "sed -i 's/hide_loops=0/hide_loops=1/' ${config}/config.sh"`)
+			custom_settings.hide_loops=true
 			toast("Reboot to take effect");
 		}
 	});
 
 	
 	force_hide_lsposed.addEventListener("click",async function (){
-		var lsposed_toggle = await run(`su -c "grep -q 'force_hide_lsposed=1' ${config}/config.sh && echo true || echo false"`);
-		if (lsposed_toggle=="true"){
+		//var lsposed_toggle = await run(`su -c "grep -q 'force_hide_lsposed=1' ${config}/config.sh && echo true || echo false"`);
+		if (custom_settings.force_hide_lsposed==true){
 			await run(`su -c "sed -i 's/force_hide_lsposed=1/force_hide_lsposed=0/' ${config}/config.sh"`)
+			custom_settings.force_hide_lsposed=false
 			toast("Reboot to take effect");
 		}
 		else {
 			if (await run(`su -c "grep -q 'force_hide_lsposed' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'force_hide_lsposed=1' >> ${config}/config.sh"`)
 			else await run(`su -c "sed -i 's/force_hide_lsposed=0/force_hide_lsposed=1/' ${config}/config.sh"`)
+			custom_settings.force_hide_lsposed=true
 			toast("Reboot to take effect");
 		}
 	});
