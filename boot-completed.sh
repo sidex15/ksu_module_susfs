@@ -3,7 +3,8 @@ MODDIR=/data/adb/modules/susfs4ksu
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 source ${MODDIR}/utils.sh
 PERSISTENT_DIR=/data/adb/susfs4ksu
-tmpfolder=/debug_ramdisk/susfs4ksu
+tmpfolder=/data/adb/susfs4ksu
+tmpcustomrom=/debug_ramdisk/susfs4ksu
 logfile="$tmpfolder/logs/susfs.log"
 logfile1="$tmpfolder/logs/susfs1.log"
 
@@ -13,7 +14,7 @@ hide_revanced=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
 # update description
-if [ -f $tmpfolder/logs/susfs_active ] ; then
+if dmesg | grep -q "susfs:"; then
 	description="description=status: ✅ SuS ඞ "
 else
 	description="description=status: failed 💢 - Make sure you're on a SuSFS patched kernel! 😭"
