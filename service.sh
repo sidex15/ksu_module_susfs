@@ -1,10 +1,8 @@
 #!/system/bin/sh
 MODDIR=/data/adb/modules/susfs4ksu
-
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
-
 source ${MODDIR}/utils.sh
-
+tmpfolder=/debug_ramdisk/susfs4ksu
 
 ## sus_su ##
 enable_sus_su(){
@@ -100,13 +98,14 @@ done
 
 # clean vendor sepolicy
 # evades reveny's native detector and native test conventional test (10)
-grep -q lineage /vendor/etc/selinux/vendor_sepolicy.cil && {
-        grep -v "lineage" /vendor/etc/selinux/vendor_sepolicy.cil > /debug_ramdisk/vendor_sepolicy.cil
-        ${SUSFS_BIN} add_sus_kstat /vendor/etc/selinux/vendor_sepolicy.cil
-        susfs_clone_perm /debug_ramdisk/vendor_sepolicy.cil /vendor/etc/selinux/vendor_sepolicy.cil
-        mount --bind /debug_ramdisk/vendor_sepolicy.cil /vendor/etc/selinux/vendor_sepolicy.cil
-        ${SUSFS_BIN} update_sus_kstat /vendor/etc/selinux/vendor_sepolicy.cil
-        ${SUSFS_BIN} add_sus_mount /vendor/etc/selinux/vendor_sepolicy.cil
+sepolicy_cil=/vendor/etc/selinux/vendor_sepolicy.cil
+grep -q lineage $sepolicy_cil && {
+        grep -v "lineage" $sepolicy_cil > $tmpfolder/vendor_sepolicy.cil
+        ${SUSFS_BIN} add_sus_kstat $sepolicy_cil
+        susfs_clone_perm $tmpfolder/vendor_sepolicy.cil $sepolicy_cil
+        mount --bind $tmpfolder/vendor_sepolicy.cil $sepolicy_cil
+        ${SUSFS_BIN} update_sus_kstat $sepolicy_cil
+        ${SUSFS_BIN} add_sus_mount $sepolicy_cil
 }
 
 sleep 30;
