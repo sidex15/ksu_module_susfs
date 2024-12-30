@@ -40,6 +40,20 @@
 								<input type="checkbox" id="hide_custom_rom" class="toggle toggle-primary" checked="checked" />
 							  </label>
 							</div>
+                            <div class="hidden" id="more_custom_rom">
+                            <div class="form-control">
+                                <label class="label cursor-pointer">
+                                      <span class="text-white text-2xl">Hide vendor sepolicy</span>
+                                  <input type="checkbox" id="hide_vendor_sepolicy" class="toggle toggle-primary" checked="checked" />
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer">
+                                      <span class="text-white text-2xl">Hide Compat Matrix</span>
+                                  <input type="checkbox" id="hide_compat_matrix" class="toggle toggle-primary" checked="checked" />
+                                </label>
+                            </div>
+                            </div>
                             <div class="form-control">
                             <label class="label cursor-pointer">
                                 <span class="text-white text-2xl">Hide Gapps</span>
@@ -95,6 +109,18 @@
                     <div class="stat flex flex-col justify-center items-center p-0">
                         <textarea class="textarea min-w-full font-sans h-32 leading-normal" placeholder="Press Load" id="custom_sus_mount"></textarea>
                         <button class="btn btn-outline w-24 mt-2 border-white text-white text-lg font-normal" id="save_sus_mount">Make it SuS</button>
+                    </div>
+                </div>
+                <div class="stats flex flex-col justify-between items-center white:bg-cyan-100/30 bg-cyan-100/30 dark:bg-black/30 mt-5 border-2 border-white backdrop-blur-sm p-4 min-w-screen">
+                    <div class="form-control">
+                        <label class="label cursor-pointer justify-between items-center flex gap-28">
+                            <span class="text-white text-2xl">Custom Try umount</span>
+                            <button class="btn btn-outline w-auto mt-2 border-white text-white text-lg font-normal" id="load_try_umount">load</button>
+                        </label>
+                    </div>
+                    <div class="stat flex flex-col justify-center items-center p-0">
+                        <textarea class="textarea min-w-full font-sans h-32 leading-normal" placeholder="Press Load" id="custom_try_umount"></textarea>
+                        <button class="btn btn-outline w-24 mt-2 border-white text-white text-lg font-normal" id="save_try_umount">Make it SuS</button>
                     </div>
                 </div>
 			</section>

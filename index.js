@@ -81,6 +81,7 @@ H.on('NAVIGATE_END', ({ to, from, trigger, location }) => {
 		//console.log("in custom");
 		custom_toggles();
 		custom_sus_mount();
+		custom_try_umount();
 		custom_sus_path();
     }
 });
@@ -294,20 +295,35 @@ async function susfs_log_toggle() {
 
 async function custom_toggles() {
 	const hide_custom_rom = document.getElementById("hide_custom_rom");
+	const more_custom_rom = document.getElementById("more_custom_rom");
 	const hide_gapps = document.getElementById("hide_gapps");
 	const hide_revanced = document.getElementById("hide_revanced");
 	const spoof_cmdline = document.getElementById("spoof_cmdline");
 	const hide_ksu_loop = document.getElementById("hide_ksu_loop");
 	const force_hide_lsposed = document.getElementById("force_hide_lsposed");
+	const hide_vendor_sepolicy = document.getElementById("hide_vendor_sepolicy");
+	const hide_compat_matrix = document.getElementById("hide_compat_matrix");
 	var custom_rom_toggle = await run(`su -c "grep -q 'hide_cusrom=1' ${config}/config.sh && echo true || echo false"`);
+	var vendor_sepolicy_toggle = await run(`su -c "grep -q 'hide_vendor_sepolicy=1' ${config}/config.sh && echo true || echo false"`);
+	var compat_matrix_toggle = await run(`su -c "grep -q 'hide_compat_matrix=1' ${config}/config.sh && echo true || echo false"`);
 	var gapps_toggle = await run(`su -c "grep -q 'hide_gapps=1' ${config}/config.sh && echo true || echo false"`);
 	var revanced_toggle = await run(`su -c "grep -q 'hide_revanced=1' ${config}/config.sh && echo true || echo false"`);
 	var cmdline_toggle = await run(`su -c "grep -q 'spoof_cmdline=1' ${config}/config.sh && echo true || echo false"`);
 	var loops_toggle = await run(`su -c "grep -q 'hide_loops=1' ${config}/config.sh && echo true || echo false"`);
 	var lsposed_toggle = await run(`su -c "grep -q 'force_hide_lsposed=1' ${config}/config.sh && echo true || echo false"`);
 
-	if (custom_rom_toggle=="true") hide_custom_rom.checked="checked";
-	else hide_custom_rom.checked=false;
+	if (custom_rom_toggle=="true"){
+		hide_custom_rom.checked="checked";
+		more_custom_rom.classList.remove("hidden");
+	}
+	else{
+		hide_custom_rom.checked=false
+		more_custom_rom.classList.add("hidden");
+	}
+	if (vendor_sepolicy_toggle=="true") hide_vendor_sepolicy.checked="checked";
+	else hide_vendor_sepolicy.checked=false;
+	if (compat_matrix_toggle=="true") hide_compat_matrix.checked="checked";
+	else hide_compat_matrix.checked=false;
 	if (gapps_toggle=="true") hide_gapps.checked="checked";
 	else hide_gapps.checked=false;
 	if (revanced_toggle=="true") hide_revanced.checked="checked";
@@ -320,20 +336,49 @@ async function custom_toggles() {
 	else force_hide_lsposed.checked=false;
 
 	hide_custom_rom.addEventListener("click",async function (){
-		toast("Reboot to take effect");
+		var custom_rom_toggle = await run(`su -c "grep -q 'hide_cusrom=1' ${config}/config.sh && echo true || echo false"`);
+		const more_custom_rom = document.getElementById("more_custom_rom");
 		if (custom_rom_toggle=="true"){
 			run(`su -c "sed -i 's/hide_cusrom=1/hide_cusrom=0/' ${config}/config.sh"`)
+			more_custom_rom.classList.add("hidden");
 			toast("Reboot to take effect");
 		}
 		else {
 			if (await run(`su -c "grep -q 'hide_cusrom' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_cusrom=1' >> ${config}/config.sh"`)
 			else run (`su -c "sed -i 's/hide_cusrom=0/hide_cusrom=1/' ${config}/config.sh"`)
+			more_custom_rom.classList.remove("hidden");
+			toast("Reboot to take effect");
+		}
+	});
+
+	hide_vendor_sepolicy.addEventListener("click",async function (){
+		var vendor_sepolicy_toggle = await run(`su -c "grep -q 'hide_vendor_sepolicy=1' ${config}/config.sh && echo true || echo false"`);
+		if (vendor_sepolicy_toggle=="true"){
+			run(`su -c "sed -i 's/hide_vendor_sepolicy=1/hide_vendor_sepolicy=0/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+		else {
+			if (await run(`su -c "grep -q 'hide_vendor_sepolicy' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_vendor_sepolicy=1' >> ${config}/config.sh"`)
+			else run (`su -c "sed -i 's/hide_vendor_sepolicy=0/hide_vendor_sepolicy=1/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+	});
+
+	hide_compat_matrix.addEventListener("click",async function (){
+		var compat_matrix_toggle = await run(`su -c "grep -q 'hide_compat_matrix=1' ${config}/config.sh && echo true || echo false"`);
+		if (compat_matrix_toggle=="true"){
+			run(`su -c "sed -i 's/hide_compat_matrix=1/hide_compat_matrix=0/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+		else {
+			if (await run(`su -c "grep -q 'hide_compat_matrix' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_compat_matrix=1' >> ${config}/config.sh"`)
+			else run (`su -c "sed -i 's/hide_compat_matrix=0/hide_compat_matrix=1/' ${config}/config.sh"`)
 			toast("Reboot to take effect");
 		}
 	});
 
 	hide_gapps.addEventListener("click",async function (){
-		toast("Reboot to take effect");
+		var gapps_toggle = await run(`su -c "grep -q 'hide_gapps=1' ${config}/config.sh && echo true || echo false"`);
 		if (gapps_toggle=="true"){
 			await run(`su -c "sed -i 's/hide_gapps=1/hide_gapps=0/' ${config}/config.sh"`)
 			toast("Reboot to take effect");
@@ -346,6 +391,7 @@ async function custom_toggles() {
 	});
 
 	hide_revanced.addEventListener("click",async function (){
+		var revanced_toggle = await run(`su -c "grep -q 'hide_revanced=1' ${config}/config.sh && echo true || echo false"`);
 		if (revanced_toggle=="true"){
 			await run(`su -c "sed -i 's/hide_revanced=1/hide_revanced=0/' ${config}/config.sh"`)
 			toast("Reboot to take effect");
@@ -358,6 +404,7 @@ async function custom_toggles() {
 	});
 
 	spoof_cmdline.addEventListener("click",async function (){
+		var cmdline_toggle = await run(`su -c "grep -q 'spoof_cmdline=1' ${config}/config.sh && echo true || echo false"`);
 		if (cmdline_toggle=="true"){
 			await run(`su -c "sed -i 's/spoof_cmdline=1/spoof_cmdline=0/' ${config}/config.sh"`)
 			toast("Reboot to take effect");
@@ -370,6 +417,7 @@ async function custom_toggles() {
 	});
 
 	hide_ksu_loop.addEventListener("click",async function (){
+		var loops_toggle = await run(`su -c "grep -q 'hide_loops=1' ${config}/config.sh && echo true || echo false"`);
 		if (loops_toggle=="true"){
 			await run(`su -c "sed -i 's/hide_loops=1/hide_loops=0/' ${config}/config.sh"`)
 			toast("Reboot to take effect");
@@ -383,6 +431,7 @@ async function custom_toggles() {
 
 	
 	force_hide_lsposed.addEventListener("click",async function (){
+		var lsposed_toggle = await run(`su -c "grep -q 'force_hide_lsposed=1' ${config}/config.sh && echo true || echo false"`);
 		if (lsposed_toggle=="true"){
 			await run(`su -c "sed -i 's/force_hide_lsposed=1/force_hide_lsposed=0/' ${config}/config.sh"`)
 			toast("Reboot to take effect");
@@ -440,13 +489,51 @@ async function custom_sus_mount(){
 		}
 	})
 
-	sus_mount_area.addEventListener('focus', () => {
+	/*sus_mount_area.addEventListener('focus', () => {
 		// Add padding to prevent the keyboard from obscuring content
 		mainContainer.style.paddingBottom = '300px'; // Adjust padding value based on need
 		sus_mount_area.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
 	});
 	
 	sus_mount_area.addEventListener('blur', () => {
+		// Remove the padding when the input loses focus
+		mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+		setTimeout(() => {
+			mainContainer.style.paddingBottom = '0px';
+		}, 500);
+		
+	});*/
+}
+
+async function custom_try_umount(){
+	const load_try_umount = document.getElementById("load_try_umount");
+	const try_umount_area = document.getElementById("custom_try_umount");
+	const save_try_umount = document.getElementById("save_try_umount");
+	const mainContainer = document.querySelector('main');
+
+	load_try_umount.addEventListener("click",async ()=>{
+		try_umount_area.innerHTML=await run(`su -c "cat ${config}/try_umount.txt"`);
+	})
+
+	save_try_umount.addEventListener("click",async ()=>{
+		var save_try_umount_val=try_umount_area.value;
+		if (save_try_umount_val=='') {
+			toast('please press load first!');
+		} 
+		else{
+			await run(`su -c "echo '${save_try_umount_val}' > ${config}/try_umount.txt"`);
+			toast("Custom SUS MOUNT saved!");
+			toast("Reboot to take effect");
+		}
+	})
+
+	try_umount_area.addEventListener('focus', () => {
+		// Add padding to prevent the keyboard from obscuring content
+		mainContainer.style.paddingBottom = '300px'; // Adjust padding value based on need
+		try_umount_area.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+	});
+	
+	try_umount_area.addEventListener('blur', () => {
 		// Remove the padding when the input loses focus
 		mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
 		setTimeout(() => {
