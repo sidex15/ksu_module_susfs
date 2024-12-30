@@ -1,3 +1,29 @@
+## v1.5.2-v1.5.3 Revision 12
+### Highly Recommend to delete `/data/adb/susfs4ksu/config.sh` first before updating to prevent unwanted issues (You only do this once, you don't need to do it again in future versions)
+### WebUI
+* Introduce spoof kernel version uname on boot
+  * also has an option "Execute on post-fs-data" for better hiding (Dangerous if used improperly)
+* Deprecate SUS_SU 1 and only use SUS_SU 2
+* Change SUS_SU Toggles the same as v1.4.2
+* Remove `su -c` in all of run and exec functions to fix some devices that kernel panics when opening the webui
+* Use /data/adb/ksu/bin/ksu_susfs for features that use ksu_susfs commands
+* Auto detects SUS_SU support from sus_su, and sus_su_active values
+* Warning will show if SUS_SU 1 is forcefully enabled.
+* Replace error symbol to warning symbol if sus_fs is not installed in your kernel (to avoid confusion)
+* Minor loading improvements
+
+### Scripts
+* Implement Dynamic install for v1.5.2+
+  * Currently v1.5.2-v1.5.3
+* Use Dynamic version in module version
+* Fix try_umount param (thanks @etnperlong)
+* Implement susfs_log, sus_su, and sus_su_active, and spoof_uname functions and configs
+* Add ability to override for susfs activation (thanks @backslashxx)
+	* `touch /data/adb/susfs4ksu/susfs_force_override`
+* Add kernelversion.txt for kernel uname spoofing on boot
+* Add new configs if the config doesn't exist on /data/adb/susfs4ksu/config.sh
+* Other misc fixes (thanks @backslashxx)
+
 ## v1.5.2 Revision 11
 ### WebUI
 * Implement Try Umount Section in custom settings page

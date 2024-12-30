@@ -1,6 +1,6 @@
 {
-    "version": "v1.5.2-R11",
-    "versionCode": 105002011,
-    "zipUrl": "https://github.com/sidex15/ksu_module_susfs/releases/latest/download/ksu_module_susfs_1.5.2.zip",
-    "changelog": "https://raw.githubusercontent.com/sidex15/ksu_module_susfs/v1.5.2/CHANGELOG.md"
+    "version": "v1.5.2-R12",
+    "versionCode": 105002012,
+    "zipUrl": "https://github.com/sidex15/ksu_module_susfs/releases/latest/download/ksu_module_susfs_1.5.2+.zip",
+    "changelog": "https://raw.githubusercontent.com/sidex15/ksu_module_susfs/v1.5.2+/CHANGELOG.md"
 }
