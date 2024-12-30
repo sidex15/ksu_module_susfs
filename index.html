@@ -30,11 +30,11 @@
 					<h4 id="susfs_version" class="text-xl text-balance text-white font-amongus2"></h4>
 				</div>
 				<div>
-					<a href="credits.html" class="text-white"><button class="btn btn-outline text-xl border-white mt-2">about</button></a>
+					<a href="credits.html" class="text-white"><button class="btn btn-outline text-xl border-white bg-cyan-100/30 dark:bg-black/30 backdrop-blur-sm mt-2 text-white">about</button></a>
 				</div>
 			</div>
 			<section class="flex flex-col justify-start items-center min-h-fit ml-4 mr-4">
-				<div class="stats stats-horizontal border-2 border-white divide-white bg-black/50 lg:stats-horizontal mt-6">
+				<div class="stats stats-horizontal border-2 border-white divide-white bg-cyan-100/30 dark:bg-black/30 backdrop-blur-sm lg:stats-horizontal mt-6">
 					<div class="stat">
 					  <div class="stat-title text-white text-2xl text-ellipsis lowercase">SUS PATH</div>
 					  <div class="stat-value text-white text-xl text-ellipsis overflow-hidden text-center" id="sus_path"></div>
@@ -50,9 +50,9 @@
 					  <div class="stat-value text-white text-xl text-ellipsis overflow-hidden text-center" id="try_umount"></div>
 					</div>
 				  </div>
-				  <div class="stats flex flex-col bg-black/50 mt-5 border-2 border-white">
-					<div class="stat">
-						<div class="w-[16.6rem]">
+				  <div class="stats flex flex-col divide-x-0 divide-y-0 items-center justify-center white:bg-cyan-100/30 bg-cyan-100/30 dark:bg-black/30 mt-5 border-2 p-2 border-white backdrop-blur-sm w-max">
+					<div class="stat p-0 mt-0">
+						<div class="w-[18.6rem]">
 							<div class="form-control">
 							  <label class="label cursor-pointer">
 								<span class="text-white text-2xl">SUSFS Logs</span>
@@ -62,7 +62,7 @@
 							<div id="sus_su_NOS" class="form-control hidden">
 								<label class="label cursor-pointer">
 								  <span class="text-white text-lg">SUS SU is not supported in your kernel</span>
-								  <svg class="w-6 h-6 text-gray-800 dark:text-red-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+								  <svg class="w-6 h-6 text-red-500 dark:text-red-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
 									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 9-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
 								  </svg>									  
 								</label>
@@ -115,10 +115,11 @@
 									</label>
 								</div>
 							</div>
-						  </div>
+						</div>
 					</div>
+					<a href="custom.html" class="text-white"><button class="btn btn-outline text-xl border-white mt-2 text-white">custom susfs settings</button></a>
 				  </div>
-				  <div class="stats flex flex-col bg-black/50 mt-5 border-2 border-white">
+				  <div class="stats flex flex-col bg-cyan-100/30 dark:bg-black/30 mt-5 border-2 border-white backdrop-blur-sm">
 					<div class="stat">
 						<div class="stat-title text-2xl text-white">Kernel Version</div>
 						<p class="text-white text-sm break-all font-sans" id="kernel_version"></p>

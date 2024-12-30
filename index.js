@@ -4,7 +4,9 @@ import Fade from './fade.js';
 import './space.js';
 
 //module location
+const tmpfolder="/debug_ramdisk/susfs4ksu"
 const moddir="/data/adb/modules/susfs4ksu"
+const config="/data/adb/susfs4ksu"
 
 //susfs_version
 var susfs_version = await run(`su -c "grep version= ${moddir}/module.prop | cut -d '=' -f 2"`);
@@ -13,16 +15,19 @@ susfs_version_tag.innerHTML=susfs_version
 
 //susfs stats and kernel version
 var is_log_empty=await run (`[ -s ${moddir}/susfslogs.txt ] && echo false || echo true`);
-if (is_log_empty=="true"){
-	var sus_path= await run(`su -c "grep '\${SUSFS_BIN} add_sus_path' ${moddir}/*.sh | wc -l"`);
-	var sus_mount= await run(`su -c "grep '\${SUSFS_BIN} add_sus_mount' ${moddir}/*.sh | wc -l"`);
-	var try_umount= await run(`su -c "grep '\${SUSFS_BIN} add_try_umount' ${moddir}/*.sh | wc -l"`);
-	toast("susfslogs.txt is empty/missing. Showed Stats from module script");
+var check_sus_path= await run(`su -c "grep -iq 'SUS_PATH_HLIST'  ${tmpfolder}/logs/susfs.log && echo true || echo false"`);
+var check_sus_mount= await run(`su -c "(grep -iq 'set SUS_MOUNT' ${tmpfolder}/logs/susfs.log && grep -iq 'LH_SUS_MOUNT' ${tmpfolder}/logs/susfs.log)" && echo true || echo false`);
+var check_try_umount= await run(`su -c "grep -iq 'LH_TRY_UMOUNT_PATH'  ${tmpfolder}/logs/susfs.log && echo true || echo false"`);
+if (is_log_empty=="true" || (check_sus_path=="false" && check_sus_mount=="false" && check_try_umount=="false")){
+	var sus_path= Number(await run(`su -c "grep -i 'sus_path'  ${tmpfolder}/logs/susfs1.log | wc -l"`));
+	var sus_mount= Number(await run(`su -c "grep -i 'sus_mount'  ${tmpfolder}/logs/susfs1.log | wc -l"`));
+	var try_umount= Number(await run(`su -c "grep -i 'try_umount'  ${tmpfolder}/logs/susfs1.log | wc -l"`));
+	toast("/logs/susfs.log is empty/missing. Showed Stats from module script");
 }
 else{
-	var sus_path= await run(`su -c "grep 'CMD_SUSFS_ADD_SUS_PATH'  ${moddir}/susfslogs.txt | wc -l"`);
-	var sus_mount= await run(`su -c "grep 'CMD_SUSFS_ADD_SUS_MOUNT'  ${moddir}/susfslogs.txt | wc -l"`);
-	var try_umount= await run(`su -c "grep 'CMD_SUSFS_ADD_TRY_UMOUNT'  ${moddir}/susfslogs.txt | wc -l"`);
+	var sus_path= Number(await run(`su -c "grep 'SUS_PATH_HLIST'  ${tmpfolder}/logs/susfs.log | wc -l"`));
+	var sus_mount= Number(await run(`su -c "(grep -w 'set SUS_MOUNT' ${tmpfolder}/logs/susfs.log; grep -w 'LH_SUS_MOUNT' ${tmpfolder}/logs/susfs.log) | wc -l"`));
+	var try_umount= Number(await run(`su -c "grep 'LH_TRY_UMOUNT_PATH' ${tmpfolder}/logs/susfs.log | wc -l"`));
 	//toast("DEBUG: Showed from susfslogs.txt");
 }
 document.getElementById("sus_path").innerHTML= sus_path;
@@ -54,7 +59,6 @@ else{
 	}
 }
 
-
 //highway transition
 const H = new Highway.Core({
 	transitions: {
@@ -64,12 +68,23 @@ const H = new Highway.Core({
 
 //execute again after the transition ends
 H.on('NAVIGATE_END', ({ to, from, trigger, location }) => {
-	keyboard_pop()
-	set_uname();
-	susfs_log_toggle();
-	if(susfs_version.includes("1.5.2") && is_sus_su_exists=="true") sus_su_radio()
-	else if(susfs_version.includes("1.4.2") && is_sus_su_exists=="true") sus_su_toggle();
+	var currentPath = window.location.pathname;
+    // Add specific script initializations here
+    if (currentPath === '/index.html') {
+		console.log("in index");
+        keyboard_pop();
+		set_uname();
+		susfs_log_toggle();
+		if(susfs_version.includes("1.5.2") && is_sus_su_exists=="true") sus_su_radio()
+		else if(susfs_version.includes("1.4.2") && is_sus_su_exists=="true") sus_su_toggle();
+    } else if (currentPath === '/custom.html') {
+		//console.log("in custom");
+		custom_toggles();
+		custom_sus_mount();
+		custom_sus_path();
+    }
 });
+
 
 //run function
 async function run(cmd) {
@@ -277,8 +292,173 @@ async function susfs_log_toggle() {
 	}
 }
 
+async function custom_toggles() {
+	const hide_custom_rom = document.getElementById("hide_custom_rom");
+	const hide_gapps = document.getElementById("hide_gapps");
+	const hide_revanced = document.getElementById("hide_revanced");
+	const spoof_cmdline = document.getElementById("spoof_cmdline");
+	const hide_ksu_loop = document.getElementById("hide_ksu_loop");
+	const force_hide_lsposed = document.getElementById("force_hide_lsposed");
+	var custom_rom_toggle = await run(`su -c "grep -q 'hide_cusrom=1' ${config}/config.sh && echo true || echo false"`);
+	var gapps_toggle = await run(`su -c "grep -q 'hide_gapps=1' ${config}/config.sh && echo true || echo false"`);
+	var revanced_toggle = await run(`su -c "grep -q 'hide_revanced=1' ${config}/config.sh && echo true || echo false"`);
+	var cmdline_toggle = await run(`su -c "grep -q 'spoof_cmdline=1' ${config}/config.sh && echo true || echo false"`);
+	var loops_toggle = await run(`su -c "grep -q 'hide_loops=1' ${config}/config.sh && echo true || echo false"`);
+	var lsposed_toggle = await run(`su -c "grep -q 'force_hide_lsposed=1' ${config}/config.sh && echo true || echo false"`);
+
+	if (custom_rom_toggle=="true") hide_custom_rom.checked="checked";
+	else hide_custom_rom.checked=false;
+	if (gapps_toggle=="true") hide_gapps.checked="checked";
+	else hide_gapps.checked=false;
+	if (revanced_toggle=="true") hide_revanced.checked="checked";
+	else hide_revanced.checked=false;
+	if (cmdline_toggle=="true") spoof_cmdline.checked="checked";
+	else spoof_cmdline.checked=false;
+	if (loops_toggle=="true") hide_ksu_loop.checked="checked";
+	else hide_ksu_loop.checked=false;
+	if (lsposed_toggle=="true") force_hide_lsposed.checked="checked";
+	else force_hide_lsposed.checked=false;
+
+	hide_custom_rom.addEventListener("click",async function (){
+		toast("Reboot to take effect");
+		if (custom_rom_toggle=="true"){
+			run(`su -c "sed -i 's/hide_cusrom=1/hide_cusrom=0/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+		else {
+			if (await run(`su -c "grep -q 'hide_cusrom' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_cusrom=1' >> ${config}/config.sh"`)
+			else run (`su -c "sed -i 's/hide_cusrom=0/hide_cusrom=1/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+	});
+
+	hide_gapps.addEventListener("click",async function (){
+		toast("Reboot to take effect");
+		if (gapps_toggle=="true"){
+			await run(`su -c "sed -i 's/hide_gapps=1/hide_gapps=0/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+		else {
+			if (await run(`su -c "grep -q 'hide_gapps' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_gapps=1' >> ${config}/config.sh"`)
+			else await run(`su -c "sed -i 's/hide_gapps=0/hide_gapps=1/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+	});
+
+	hide_revanced.addEventListener("click",async function (){
+		if (revanced_toggle=="true"){
+			await run(`su -c "sed -i 's/hide_revanced=1/hide_revanced=0/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+		else {
+			if (await run(`su -c "grep -q 'hide_revanced' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_revanced=1' >> ${config}/config.sh"`)
+			else await run(`su -c "sed -i 's/hide_revanced=0/hide_revanced=1/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+	});
+
+	spoof_cmdline.addEventListener("click",async function (){
+		if (cmdline_toggle=="true"){
+			await run(`su -c "sed -i 's/spoof_cmdline=1/spoof_cmdline=0/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+		else {
+			if (await run(`su -c "grep -q 'spoof_cmdline' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'spoof_cmdline=1' >> ${config}/config.sh"`)
+			else await run(`su -c "sed -i 's/spoof_cmdline=0/spoof_cmdline=1/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+	});
+
+	hide_ksu_loop.addEventListener("click",async function (){
+		if (loops_toggle=="true"){
+			await run(`su -c "sed -i 's/hide_loops=1/hide_loops=0/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+		else {
+			if (await run(`su -c "grep -q 'hide_loops' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'hide_loops=1' >> ${config}/config.sh"`)
+			else await run(`su -c "sed -i 's/hide_loops=0/hide_loops=1/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+	});
+
+	
+	force_hide_lsposed.addEventListener("click",async function (){
+		if (lsposed_toggle=="true"){
+			await run(`su -c "sed -i 's/force_hide_lsposed=1/force_hide_lsposed=0/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+		else {
+			if (await run(`su -c "grep -q 'force_hide_lsposed' ${config}/config.sh && echo true || echo false"`)=="false") run(`su -c "echo 'force_hide_lsposed=1' >> ${config}/config.sh"`)
+			else await run(`su -c "sed -i 's/force_hide_lsposed=0/force_hide_lsposed=1/' ${config}/config.sh"`)
+			toast("Reboot to take effect");
+		}
+	});
+}
+
+async function custom_sus_path(){
+	const load_sus_path = document.getElementById("load_sus_path");
+	const sus_path_area = document.getElementById("custom_sus_path");
+	const save_sus_path = document.getElementById("save_sus_path");
+
+	load_sus_path.addEventListener("click",async ()=>{
+		sus_path_area.innerHTML=await run(`su -c "cat ${config}/sus_path.txt"`);
+	})
+
+	save_sus_path.addEventListener("click",async ()=>{
+		var save_sus_path_val=sus_path_area.value;
+		//console.log(save_sus_path_val);
+		if (save_sus_path_val=='') {
+			toast('please press load first!');
+		} 
+		else{
+			await run(`su -c "echo '${save_sus_path_val}' > ${config}/sus_path.txt"`);
+			toast("Custom SUS PATH saved!");
+			toast("Reboot to take effect");
+		}
+	})
+}
+
+async function custom_sus_mount(){
+	const load_sus_mount = document.getElementById("load_sus_mount");
+	const sus_mount_area = document.getElementById("custom_sus_mount");
+	const save_sus_mount = document.getElementById("save_sus_mount");
+	const mainContainer = document.querySelector('main');
+
+	load_sus_mount.addEventListener("click",async ()=>{
+		sus_mount_area.innerHTML=await run(`su -c "cat ${config}/sus_mount.txt"`);
+	})
+
+	save_sus_mount.addEventListener("click",async ()=>{
+		var save_sus_mount_val=sus_mount_area.value;
+		if (save_sus_mount_val=='') {
+			toast('please press load first!');
+		} 
+		else{
+			await run(`su -c "echo '${save_sus_mount_val}' > ${config}/sus_mount.txt"`);
+			toast("Custom SUS MOUNT saved!");
+			toast("Reboot to take effect");
+		}
+	})
+
+	sus_mount_area.addEventListener('focus', () => {
+		// Add padding to prevent the keyboard from obscuring content
+		mainContainer.style.paddingBottom = '300px'; // Adjust padding value based on need
+		sus_mount_area.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+	});
+	
+	sus_mount_area.addEventListener('blur', () => {
+		// Remove the padding when the input loses focus
+		mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+		setTimeout(() => {
+			mainContainer.style.paddingBottom = '0px';
+		}, 500);
+		
+	});
+}
+
 //Keyboard
-function keyboard_pop(){const inputBox = document.getElementById('sus_uname');
+function keyboard_pop(){
+const inputBox = document.getElementById('sus_uname');
 const mainContainer = document.querySelector('main');
 
 inputBox.addEventListener('focus', () => {

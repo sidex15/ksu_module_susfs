@@ -10,6 +10,7 @@ export default defineConfig({
             input: {
                 main: './index.html',
                 credits: './credits.html',
+                custom: './custom.html',
                 //whitelist: './whitelist.html',
                 //blacklist: './blacklist.html',
                 fade: './fade.js'
