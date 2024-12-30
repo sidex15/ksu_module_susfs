@@ -1,5 +1,6 @@
 ## v1.5.2 Revision 8
 * Introducing SUSFS WebUI 1.5.2
+	* SUS_PATH, SUS_MOUNT, and TRY_UMOUNT Stats
 	* SUSFS Logs toggle
 	* SUS SU modes (0,1,2)
 	* SUS SU modes on boot (1,2)
