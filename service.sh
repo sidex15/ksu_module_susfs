@@ -39,35 +39,35 @@ enable_sus_su
 ## Props ##
 resetprop -w sys.boot_completed 0
 
-susfs_hexpatch_props "ro.boot.vbmeta.device_state" "locked"
-susfs_hexpatch_props "ro.boot.verifiedbootstate" "green"
-susfs_hexpatch_props "ro.boot.flash.locked" "1"
-susfs_hexpatch_props "ro.boot.veritymode" "enforcing"
-susfs_hexpatch_props "ro.boot.warranty_bit" "0"
-susfs_hexpatch_props "ro.warranty_bit" "0"
-susfs_hexpatch_props "ro.debuggable" "0"
-susfs_hexpatch_props "ro.force.debuggable" "0"
-susfs_hexpatch_props "ro.secure" "1"
-susfs_hexpatch_props "ro.adb.secure" "1"
-susfs_hexpatch_props "ro.build.type" "user"
-susfs_hexpatch_props "ro.build.tags" "release-keys"
-susfs_hexpatch_props "ro.vendor.boot.warranty_bit" "0"
-susfs_hexpatch_props "ro.vendor.warranty_bit" "0"
-susfs_hexpatch_props "vendor.boot.vbmeta.device_state" "locked"
-susfs_hexpatch_props "vendor.boot.verifiedbootstate" "green"
-susfs_hexpatch_props "sys.oem_unlock_allowed" "0"
+check_reset_prop "ro.boot.vbmeta.device_state" "locked"
+check_reset_prop "ro.boot.verifiedbootstate" "green"
+check_reset_prop "ro.boot.flash.locked" "1"
+check_reset_prop "ro.boot.veritymode" "enforcing"
+check_reset_prop "ro.boot.warranty_bit" "0"
+check_reset_prop "ro.warranty_bit" "0"
+check_reset_prop "ro.debuggable" "0"
+check_reset_prop "ro.force.debuggable" "0"
+check_reset_prop "ro.secure" "1"
+check_reset_prop "ro.adb.secure" "1"
+check_reset_prop "ro.build.type" "user"
+check_reset_prop "ro.build.tags" "release-keys"
+check_reset_prop "ro.vendor.boot.warranty_bit" "0"
+check_reset_prop "ro.vendor.warranty_bit" "0"
+check_reset_prop "vendor.boot.vbmeta.device_state" "locked"
+check_reset_prop "vendor.boot.verifiedbootstate" "green"
+check_reset_prop "sys.oem_unlock_allowed" "0"
 
 # MIUI specific
-susfs_hexpatch_props "ro.secureboot.lockstate" "locked"
+check_reset_prop "ro.secureboot.lockstate" "locked"
 
 # Realme specific
-susfs_hexpatch_props "ro.boot.realmebootstate" "green"
-susfs_hexpatch_props "ro.boot.realme.lockstate" "1"
+check_reset_prop "ro.boot.realmebootstate" "green"
+check_reset_prop "ro.boot.realme.lockstate" "1"
 
 # Hide that we booted from recovery when magisk is in recovery mode
-susfs_hexpatch_props "ro.bootmode" "recovery" "unknown"
-susfs_hexpatch_props "ro.boot.bootmode" "recovery" "unknown"
-susfs_hexpatch_props "vendor.boot.bootmode" "recovery" "unknown"
+contains_reset_prop "ro.bootmode" "recovery" "unknown"
+contains_reset_prop "ro.boot.bootmode" "recovery" "unknown"
+contains_reset_prop "vendor.boot.bootmode" "recovery" "unknown"
 
 # Set vbmeta verifiedBootHash from file (if present and not empty)
 HASH_FILE="/data/adb/VerifiedBootHash/VerifiedBootHash.txt"
