@@ -19,6 +19,8 @@ enable_sus_su(){
         ## Copy the new generated sus_su_drv_path and 'sus_su' to /system/bin/ and rename 'sus_su' to 'su' ##
         cp -f /data/adb/ksu/bin/sus_su ${SYSTEM_OL}/system_bin/su
         cp -f /data/adb/ksu/bin/sus_su_drv_path ${SYSTEM_OL}/system_bin/sus_su_drv_path
+		## Generate sus_su_enabled flag ##
+		touch ${MODDIR}/sus_su_enabled
         ## Setup permission ##
         susfs_clone_perm ${SYSTEM_OL}/system_bin /system/bin
         susfs_clone_perm ${SYSTEM_OL}/system_bin/su /system/bin/sh
@@ -36,7 +38,7 @@ enable_sus_su(){
 enable_sus_su
 
 ## Disable susfs kernel log ##
-#${SUSFS_BIN} enable_log 0
+${SUSFS_BIN} enable_log 1
 
 ## Props ##
 resetprop -w sys.boot_completed 0
@@ -79,18 +81,21 @@ fi
 
 # Holmes 1.5+ Futile Trace Hide
 # look for a loop that has a journal
-for device in $(ls -Ld /proc/fs/jbd2/loop*8 | sed 's|/proc/fs/jbd2/||; s|-8||'); do 
-	${SUSFS_BIN} add_sus_path /proc/fs/jbd2/${device}-8
-	${SUSFS_BIN} add_sus_path /proc/fs/ext4/${device}
+for device in $(ls -Ld /proc/fs/jbd2/loop*8 | sed 's|/proc/fs/jbd2/||; s|-8||'); do
+        ${SUSFS_BIN} add_sus_path /proc/fs/jbd2/${device}-8
+        ${SUSFS_BIN} add_sus_path /proc/fs/ext4/${device}
 done
 
 # clean vendor sepolicy
 # evades reveny's native detector and native test conventional test (10)
 grep -q lineage /vendor/etc/selinux/vendor_sepolicy.cil && {
-	grep -v "lineage" /vendor/etc/selinux/vendor_sepolicy.cil > /debug_ramdisk/vendor_sepolicy.cil
-	${SUSFS_BIN} add_sus_kstat /vendor/etc/selinux/vendor_sepolicy.cil
-	susfs_clone_perm /debug_ramdisk/vendor_sepolicy.cil /vendor/etc/selinux/vendor_sepolicy.cil
-	mount --bind /debug_ramdisk/vendor_sepolicy.cil /vendor/etc/selinux/vendor_sepolicy.cil
-	${SUSFS_BIN} update_sus_kstat /vendor/etc/selinux/vendor_sepolicy.cil
-	${SUSFS_BIN} add_sus_mount /vendor/etc/selinux/vendor_sepolicy.cil
+        grep -v "lineage" /vendor/etc/selinux/vendor_sepolicy.cil > /debug_ramdisk/vendor_sepolicy.cil
+        ${SUSFS_BIN} add_sus_kstat /vendor/etc/selinux/vendor_sepolicy.cil
+        susfs_clone_perm /debug_ramdisk/vendor_sepolicy.cil /vendor/etc/selinux/vendor_sepolicy.cil
+        mount --bind /debug_ramdisk/vendor_sepolicy.cil /vendor/etc/selinux/vendor_sepolicy.cil
+        ${SUSFS_BIN} update_sus_kstat /vendor/etc/selinux/vendor_sepolicy.cil
+        ${SUSFS_BIN} add_sus_mount /vendor/etc/selinux/vendor_sepolicy.cil
 }
+
+sleep 30;
+dmesg | grep ksu_susfs > ${MODDIR}/susfslogs.txt
