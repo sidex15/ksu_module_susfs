@@ -10,6 +10,9 @@ logfile="$tmpfolder/logs/susfs.log"
 hide_loops=1
 hide_vendor_sepolicy=0
 hide_compat_matrix=0
+susfs_log=1
+sus_su=1
+sus_su_active=1
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
 ## sus_su ##
@@ -20,7 +23,8 @@ enable_sus_su(){
         mkdir -p ${SYSTEM_OL}/system_bin 2>/dev/null
          ## Enable sus_su or abort the function if sus_su is not supported ##
         if ! ${SUSFS_BIN} sus_su 1; then
-        return
+			sed -i "s/^sus_su=.*/sus_su=-1/" ${PERSISTENT_DIR}/config.sh
+			return
         fi
         ## Copy the new generated sus_su_drv_path and 'sus_su' to /system/bin/ and rename 'sus_su' to 'su' ##
         cp -f /data/adb/ksu/bin/sus_su ${SYSTEM_OL}/system_bin/su
@@ -37,26 +41,19 @@ enable_sus_su(){
         ${SUSFS_BIN} add_sus_mount /system/bin
         ## Umount it for no root granted process ##
         ${SUSFS_BIN} add_try_umount /system/bin 1
+		sed -i "s/^sus_su=.*/sus_su=1/" ${PERSISTENT_DIR}/config.sh
+		sed -i "s/^sus_su_active=.*/sus_su_active=1/" ${PERSISTENT_DIR}/config.sh
 }
 
 ## Enable sus_su ##
-## Uncomment this if you are using kprobe hooks ksu, make sure CONFIG_KSU_SUSFS_SUS_SU config is enabled when compiling kernel ##
-enable_sus_su
-
-if_sus_su_disabled(){
-  if grep -q '^#enable_sus_su$' $MODDIR/service.sh; then
-    if ! ${SUSFS_BIN} sus_su 0; then
-      return
-    fi
-    echo 0 > ${MODDIR}/sus_su_enabled;
-  fi
+[ $sus_su = 1 ] && {
+	enable_sus_su
 }
 
-## Check if enable_sus_su is disabled but sus_su is supported"
-if_sus_su_disabled
-
 ## Disable susfs kernel log ##
-${SUSFS_BIN} enable_log 1
+[ $susfs_log = 1 ] && {
+	${SUSFS_BIN} enable_log 1
+}
 
 ## Props ##
 resetprop -w sys.boot_completed 0

@@ -1,4 +1,7 @@
 # default values
+susfs_log=1
+sus_su=1
+sus_su_acitve=1
 hide_cusrom=0
 hide_vendor_sepolicy=0
 hide_compat_matrix=0
