@@ -76,3 +76,10 @@ HASH_FILE="/data/adb/VerifiedBootHash/VerifiedBootHash.txt"
 if [ -s "$HASH_FILE" ]; then
     resetprop -v -n ro.boot.vbmeta.digest "$(tr '[:upper:]' '[:lower:]' <"$HASH_FILE")"
 fi
+
+# Holmes 1.5+ Futile Trace Hide
+# look for a loop that has a journal
+for device in $(ls -Ld /proc/fs/jbd2/loop*8 | sed 's|/proc/fs/jbd2/||; s|-8||'); do 
+	${SUSFS_BIN} add_sus_path /proc/fs/jbd2/${device}-8
+	${SUSFS_BIN} add_sus_path /proc/fs/ext4/${device}
+done

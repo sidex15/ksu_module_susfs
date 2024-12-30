@@ -27,10 +27,3 @@ hide_app () {
 	for path in $(pm path $1 | cut -d: -f2) ; do ${SUSFS_BIN} add_sus_mount $path ; ${SUSFS_BIN} add_try_umount $path 1 ; done
 }
 for i in $packages ; do hide_app $i ; done 
-
-# Holmes 1.5+ Futile Trace Hide
-# look for a loop that has a journal
-for device in $(ls -Ld /proc/fs/jbd2/loop*8 | sed 's|/proc/fs/jbd2/||; s|-8||'); do 
-	${SUSFS_BIN} add_sus_path /proc/fs/jbd2/${device}-8
-	${SUSFS_BIN} add_sus_path /proc/fs/ext4/${device}
-done
