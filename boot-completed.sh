@@ -29,7 +29,7 @@ sed -i "s/^description=.*/$description/g" $MODDIR/module.prop
 if [ -n "$version" ] && [ "$(echo $version | cut -d. -f3)" -gt 2 ] 2>/dev/null; then
     # Replace only version number, keep suffix
     sed -i "s/^version=v[0-9.]*\(-R[0-9]*\)$/version=$version$suffix/" $MODDIR/module.prop
-if
+fi
 
 # routines
 
