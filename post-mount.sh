@@ -12,5 +12,8 @@ logfile1="$tmpfolder/logs/susfs1.log"
 for i in $(grep -v "#" $PERSISTENT_DIR/sus_mount.txt); do
 	${SUSFS_BIN} add_sus_mount $i && echo "[sus_mount]: susfs4ksu/post-mount $i" >> $logfile1
 done
+for i in $(grep -v "#" $PERSISTENT_DIR/try_umount.txt); do
+	${SUSFS_BIN} add_try_umount $i && echo "[try_umount]: susfs4ksu/post-mount $i" >> $logfile1
+done
 
 # EOF
