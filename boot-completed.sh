@@ -6,10 +6,12 @@ PERSISTENT_DIR=/data/adb/susfs4ksu
 tmpfolder=/debug_ramdisk/susfs4ksu
 logfile="$tmpfolder/logs/susfs.log"
 logfile1="$tmpfolder/logs/susfs1.log"
+kernel_ver=$(head -n 1 "$PERSISTENT_DIR/kernelversion.txt")
 
 hide_cusrom=0
 hide_gapps=0
 hide_revanced=0
+spoof_uname=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
 # update description
@@ -23,6 +25,13 @@ fi
 sed -i "s/^description=.*/$description/g" $MODDIR/module.prop
 
 # routines
+
+# if spoof_uname is on mode 1, set_uname will be called here
+[ $spoof_uname = 1 ] && {
+	[ -f "$PERSISTENT_DIR/kernelversion.txt" ] || kernel_ver="default"
+	[ -z "$kernel_ver" ] && kernel_ver="default"
+    ${SUSFS_BIN} set_uname $kernel_ver 'default'
+}
 
 # echo "hide_cusrom=1" >> /data/adb/susfs4ksu/config.sh
 [ $hide_cusrom = 1 ] && {

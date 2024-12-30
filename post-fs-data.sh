@@ -8,6 +8,7 @@ mkdir -p $tmpfolder/logs
 mkdir -p $tmpfolder
 logfile="$tmpfolder/logs/susfs.log"
 logfile1="$tmpfolder/logs/susfs1.log"
+kernel_ver=$(head -n 1 "$PERSISTENT_DIR/kernelversion.txt")
 
 dmesg | grep -q "susfs:" > /dev/null && touch $tmpfolder/logs/susfs_active
 
@@ -18,9 +19,17 @@ dmesg | grep -q "susfs:" > /dev/null && touch $tmpfolder/logs/susfs_active
 [ -f $PERSISTENT_DIR/susfs_force_override ] && touch $tmpfolder/logs/susfs_active
 
 force_hide_lsposed=0
+spoof_uname=0
 [ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
 
 echo "susfs4ksu/post-fs-data: [logging_initialized]" > $logfile1
+
+# if spoof_uname is on mode 2, set_uname will be called here
+[ $spoof_uname = 2 ] && {
+	[ -f "$PERSISTENT_DIR/kernelversion.txt" ] || kernel_ver="default"
+	[ -z "$kernel_ver" ] && kernel_ver="default"
+    ${SUSFS_BIN} set_uname $kernel_ver 'default'
+}
 
 # LSPosed
 # but this is probably not needed if auto_sus_bind_mount is enabled
