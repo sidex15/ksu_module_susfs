@@ -6,6 +6,12 @@ SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 
 source ${MODDIR}/utils.sh
 
+
+#Custom Rom
+${SUSFS_BIN} add_sus_path /system/addon.d
+${SUSFS_BIN} add_sus_path /vendor/bin/install-recovery.sh
+${SUSFS_BIN} add_sus_path /system/bin/install-recovery.sh
+
 #KernelSU
 ${SUSFS_BIN} add_sus_mount /data/adb/modules
 ${SUSFS_BIN} add_sus_mount /debug_ramdisk
