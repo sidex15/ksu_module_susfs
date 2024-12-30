@@ -15,24 +15,29 @@ susfs_version_tag.innerHTML=susfs_version
 
 //susfs stats and kernel version
 var is_log_empty=await run (`[ -s ${moddir}/susfslogs.txt ] && echo false || echo true`);
-var check_sus_path= await run(`su -c "grep -iq 'SUS_PATH_HLIST'  ${tmpfolder}/logs/susfs.log && echo true || echo false"`);
-var check_sus_mount= await run(`su -c "(grep -iq 'set SUS_MOUNT' ${tmpfolder}/logs/susfs.log && grep -iq 'LH_SUS_MOUNT' ${tmpfolder}/logs/susfs.log)" && echo true || echo false`);
-var check_try_umount= await run(`su -c "grep -iq 'LH_TRY_UMOUNT_PATH'  ${tmpfolder}/logs/susfs.log && echo true || echo false"`);
-if (is_log_empty=="true" || (check_sus_path=="false" && check_sus_mount=="false" && check_try_umount=="false")){
-	var sus_path= Number(await run(`su -c "grep -i 'sus_path'  ${tmpfolder}/logs/susfs1.log | wc -l"`));
-	var sus_mount= Number(await run(`su -c "grep -i 'sus_mount'  ${tmpfolder}/logs/susfs1.log | wc -l"`));
-	var try_umount= Number(await run(`su -c "grep -i 'try_umount'  ${tmpfolder}/logs/susfs1.log | wc -l"`));
-	toast("/logs/susfs.log is empty/missing. Showed Stats from module script");
+var susfs_stats = catToObject(await run(`su -c "cat ${tmpfolder}/susfs_stats.txt"`));
+if (is_log_empty=="true" || (susfs_stats.sus_path==0 && susfs_stats.sus_mount==0 && susfs_stats.try_umount==0)){
+	susfs_stats = catToObject(await run(`su -c "cat ${tmpfolder}/susfs_stats1.txt"`));
+	toast("susfs_stats.txt is empty/missing. Showed Stats from module script");
 }
-else{
-	var sus_path= Number(await run(`su -c "grep 'SUS_PATH_HLIST'  ${tmpfolder}/logs/susfs.log | wc -l"`));
-	var sus_mount= Number(await run(`su -c "(grep -w 'set SUS_MOUNT' ${tmpfolder}/logs/susfs.log; grep -w 'LH_SUS_MOUNT' ${tmpfolder}/logs/susfs.log) | wc -l"`));
-	var try_umount= Number(await run(`su -c "grep 'LH_TRY_UMOUNT_PATH' ${tmpfolder}/logs/susfs.log | wc -l"`));
-	//toast("DEBUG: Showed from susfslogs.txt");
+
+function catToObject(cat){
+	// Convert the string content to an object
+	const obj = cat
+	.split('\n')                    // Split into lines
+	.filter(line => line.includes('='))  // Filter valid lines
+	.reduce((acc, line) => {
+		const [key, value] = line.split('=').map(str => str.trim());
+		acc[key] = Number(value); // Map values
+		return acc;
+	}, {});
+
+	return obj
 }
-document.getElementById("sus_path").innerHTML= sus_path;
-document.getElementById("sus_mount").innerHTML= sus_mount;
-document.getElementById("try_umount").innerHTML= try_umount;
+
+document.getElementById("sus_path").innerHTML= susfs_stats.sus_path;
+document.getElementById("sus_mount").innerHTML= susfs_stats.sus_mount;
+document.getElementById("try_umount").innerHTML= susfs_stats.try_umount;
 document.getElementById("kernel_version").innerHTML= await run(`uname -a | cut -d' ' -f3-`);
 
 //toggles
@@ -507,21 +512,6 @@ async function custom_sus_mount(){
 			toast("Reboot to take effect");
 		}
 	})
-
-	/*sus_mount_area.addEventListener('focus', () => {
-		// Add padding to prevent the keyboard from obscuring content
-		mainContainer.style.paddingBottom = '300px'; // Adjust padding value based on need
-		sus_mount_area.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
-	});
-	
-	sus_mount_area.addEventListener('blur', () => {
-		// Remove the padding when the input loses focus
-		mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
-		setTimeout(() => {
-			mainContainer.style.paddingBottom = '0px';
-		}, 500);
-		
-	});*/
 }
 
 async function custom_try_umount(){
