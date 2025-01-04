@@ -17,3 +17,13 @@ This module will now have a directory called `VerifiedBootHash` in `/data/adb` c
 
 ## Credits
 susfs4ksu: https://gitlab.com/simonpunk/susfs4ksu/
+
+## Buy us some coffee ☕
+### Simon Punk
+PayPal: `kingjeffkimo@yahoo.com.tw`
+<br>BTC: `bc1qgkwvsfln02463zpjf7z6tds8xnpeykggtgk4kw`
+### sidex15
+ETH (ERC20): `0xa52151ebd2718a00af9e1dfcacfb30e1d3a94860`
+<br>USDT (TRC20): `TAUbxzug7cygExFunhFBiG6ntmbJwz7Skn`
+<br>USDT (ERC20): 
+`0xa52151ebd2718a00af9e1dfcacfb30e1d3a94860`
