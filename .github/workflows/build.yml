@@ -22,10 +22,10 @@ jobs:
         run: |
           cp -r dist/ ../dist-temp/
 
-      - name: Checkout 1.5.2+ branch
+      - name: Checkout v1.5.2+ branch
         uses: actions/checkout@v4
         with:
-          ref: 1.5.2+
+          ref: v1.5.2+
 
       - name: Remove old contents from webroot folder
         run: |
@@ -35,12 +35,12 @@ jobs:
         run: |
           cp -r ../dist-temp/* webroot/
 
-      - name: Compress 1.5.2+ branch as .zip file
+      - name: Compress v1.5.2+ branch as .zip file
         run: |
-          git archive --format zip --output release.zip 1.5.2+
+          zip -r release.zip *
 
       - name: Upload release artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-1.5.2+
+          name: release-v1.5.2+
           path: release.zip
