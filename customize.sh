@@ -1,5 +1,9 @@
 DEST_BIN_DIR=/data/adb/ksu/bin
 
+if [ -z "$KSU" ] ; then
+	abort '[!] SuSFS is for KernelSU only.'
+fi
+
 if [ ! -d ${DEST_BIN_DIR} ]; then
     ui_print "'${DEST_BIN_DIR}' not existed, installation aborted."
     rm -rf ${MODPATH}
