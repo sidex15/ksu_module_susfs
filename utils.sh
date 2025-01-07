@@ -1,4 +1,4 @@
-#!/system/bin/sh
+#!/bin/sh
 PATH=/data/adb/ksu/bin:$PATH
 ## susfs_clone_perm <file/or/dir/perm/to/be/changed> <file/or/dir/to/clone/from>
 susfs_clone_perm() {
