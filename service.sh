@@ -118,10 +118,12 @@ dmesg | grep susfs_auto_add > $logfile
 dmesg | grep ksu_susfs >> $logfile
 # susfs stats
 rm ${tmpfolder}/susfs_stats.txt
-echo sus_path=$(dmesg | grep 'SUS_PATH_HLIST' | wc -l) >> ${tmpfolder}/susfs_stats.txt
-echo sus_mount=$(dmesg | (grep -we 'set SUS_MOUNT' -we 'LH_SUS_MOUNT') | wc -l) >> ${tmpfolder}/susfs_stats.txt
-echo try_umount=$(dmesg | grep 'LH_TRY_UMOUNT_PATH' | wc -l) >> ${tmpfolder}/susfs_stats.txt
+echo sus_path=$(dmesg | grep -c 'SUS_PATH_HLIST') >> ${tmpfolder}/susfs_stats.txt
+echo sus_mount=$(dmesg | grep -cE "set SUS_MOUNT|LH_SUS_MOUNT" ) >> ${tmpfolder}/susfs_stats.txt
+echo try_umount=$(dmesg | grep -c 'LH_TRY_UMOUNT_PATH') >> ${tmpfolder}/susfs_stats.txt
 rm ${tmpfolder}/susfs_stats1.txt
-echo sus_path=$(grep -i 'sus_path'  $logfile1 | wc -l) >> ${tmpfolder}/susfs_stats1.txt
-echo sus_mount=$(grep -i 'sus_mount'  $logfile1 | wc -l) >> ${tmpfolder}/susfs_stats1.txt
-echo try_umount=$(grep -i 'try_umount'  $logfile1 | wc -l) >> ${tmpfolder}/susfs_stats1.txt
+echo sus_path=$(grep -ci 'sus_path' $logfile1 ) >> ${tmpfolder}/susfs_stats1.txt
+echo sus_mount=$(grep -ci 'sus_mount' $logfile1 ) >> ${tmpfolder}/susfs_stats1.txt
+echo try_umount=$(grep -ci 'try_umount' $logfile1 ) >> ${tmpfolder}/susfs_stats1.txt
+
+# EOF
