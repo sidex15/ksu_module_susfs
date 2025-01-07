@@ -18,21 +18,15 @@ if [ ${ver} -lt 5 ]; then
     KERNEL_VERSION=non-gki
 	ui_print "Non-GKI kernel detected... use non-GKI susfs bins..."
 	chmod +x "${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm64"
-	chmod +x "${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm"
 	if [ ${ARCH} = "arm64" ]; then
 		SUSFS_VERSION=$(${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm64 show version | cut -d. -f3)
-	elif [ ${ARCH} = "arm" ]; then
-		SUSFS_VERSION=$(${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm show version | cut -d. -f3)
 	fi
 else
 	KERNEL_VERSION=gki
 	ui_print "GKI kernel detected... use GKI susfs bins..."
 	chmod +x "${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm64"
-	chmod +x "${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm"
 	if [ ${ARCH} = "arm64" ]; then
 		SUSFS_VERSION=$(${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm64 show version | cut -d. -f3)
-	elif [ ${ARCH} = "arm" ]; then
-		SUSFS_VERSION=$(${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm show version | cut -d. -f3)
 	fi
 fi
 
@@ -46,15 +40,6 @@ if [ ${ARCH} = "arm64" ]; then
 			cp ${TMPDIR}/susfs/tools/1.5.2/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
 		fi
         cp ${TMPDIR}/susfs/tools/sus_su_arm64 ${DEST_BIN_DIR}/sus_su
-elif [ ${ARCH} = "arm" ]; then
-		if [ -n "$SUSFS_VERSION" ] && [ "$SUSFS_VERSION" -gt 2 ] 2>/dev/null; then
-			ui_print "Kernel is using susfs 1.5.3"
-			cp ${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm ${DEST_BIN_DIR}/ksu_susfs
-		else
-			ui_print "Kernel is using susfs 1.5.2"
-			cp ${TMPDIR}/susfs/tools/1.5.2/${KERNEL_VERSION}/ksu_susfs_arm ${DEST_BIN_DIR}/ksu_susfs
-		fi
-        cp ${TMPDIR}/susfs/tools/sus_su_arm ${DEST_BIN_DIR}/sus_su
 fi
 
 chmod 755 ${DEST_BIN_DIR}/ksu_susfs ${DEST_BIN_DIR}/sus_su
