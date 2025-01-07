@@ -1,0 +1,48 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - webui
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout webui branch
+        uses: actions/checkout@v2
+        with:
+          ref: webui
+
+      - name: Build webui branch
+        run: |
+           npm install
+           npm run build
+
+      - name: Copy dist folder to a temporary location
+        run: |
+          cp -r dist/ ../dist-temp/
+
+      - name: Checkout 1.5.2+ branch
+        uses: actions/checkout@v2
+        with:
+          ref: 1.5.2+
+
+      - name: Remove old contents from webroot folder
+        run: |
+          rm -rf webroot/*
+
+      - name: Copy contents from dist-temp to webroot
+        run: |
+          cp -r ../dist-temp/* webroot/
+
+      - name: Compress 1.5.2+ branch as .zip file
+        run: |
+          git archive --format zip --output release.zip 1.5.2+
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-1.5.2+
+          path: release.zip
