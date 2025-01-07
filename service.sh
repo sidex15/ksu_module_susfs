@@ -69,6 +69,9 @@ contains_reset_prop "ro.bootmode" "recovery" "unknown"
 contains_reset_prop "ro.boot.bootmode" "recovery" "unknown"
 contains_reset_prop "vendor.boot.bootmode" "recovery" "unknown"
 
+# fake encryption status
+check_reset_prop "ro.crypto.state" "encrypted"
+
 # Set vbmeta verifiedBootHash from file (if present and not empty)
 HASH_FILE="/data/adb/VerifiedBootHash/VerifiedBootHash.txt"
 if [ -s "$HASH_FILE" ]; then
