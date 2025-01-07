@@ -1,7 +1,7 @@
-#!/system/bin/sh
+#!/bin/sh
 MODDIR=/data/adb/modules/susfs4ksu
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
-source ${MODDIR}/utils.sh
+. ${MODDIR}/utils.sh
 PERSISTENT_DIR=/data/adb/susfs4ksu
 tmpfolder=/debug_ramdisk/susfs4ksu
 logfile1="$tmpfolder/logs/susfs1.log"
@@ -12,7 +12,7 @@ hide_vendor_sepolicy=0
 hide_compat_matrix=0
 susfs_log=1
 sus_su=2
-[ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
+[ -f $PERSISTENT_DIR/config.sh ] && . $PERSISTENT_DIR/config.sh
 
 # SUS_SU 2#
 sus_su_2(){

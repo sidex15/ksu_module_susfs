@@ -1,7 +1,7 @@
 #!/bin/sh
 MODDIR=/data/adb/modules/susfs4ksu
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
-source ${MODDIR}/utils.sh
+. ${MODDIR}/utils.sh
 PERSISTENT_DIR=/data/adb/susfs4ksu
 tmpfolder=/debug_ramdisk/susfs4ksu
 mkdir -p $tmpfolder/logs
@@ -25,7 +25,7 @@ fi
 
 force_hide_lsposed=0
 spoof_uname=0
-[ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
+[ -f $PERSISTENT_DIR/config.sh ] && . $PERSISTENT_DIR/config.sh
 
 echo "susfs4ksu/post-fs-data: [logging_initialized]" > $logfile1
 

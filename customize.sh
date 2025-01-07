@@ -1,3 +1,4 @@
+#!/bin/sh
 DEST_BIN_DIR=/data/adb/ksu/bin
 
 if [ -z "$KSU" ] ; then

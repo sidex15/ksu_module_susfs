@@ -1,7 +1,7 @@
-#!/system/bin/sh
+#!/bin/sh
 MODDIR=/data/adb/modules/susfs4ksu
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
-source ${MODDIR}/utils.sh
+. ${MODDIR}/utils.sh
 PERSISTENT_DIR=/data/adb/susfs4ksu
 tmpfolder=/debug_ramdisk/susfs4ksu
 logfile="$tmpfolder/logs/susfs.log"
@@ -14,7 +14,7 @@ hide_cusrom=0
 hide_gapps=0
 hide_revanced=0
 spoof_uname=0
-[ -f $PERSISTENT_DIR/config.sh ] && source $PERSISTENT_DIR/config.sh
+[ -f $PERSISTENT_DIR/config.sh ] && . $PERSISTENT_DIR/config.sh
 
 # update description
 if [ -f $tmpfolder/logs/susfs_active ] || dmesg | grep -q "susfs:"; then
@@ -75,7 +75,7 @@ fi
 	max_attempts=15 
 	until grep "youtube" /proc/self/mounts || [ $count -ge $max_attempts ]; do 
 	    sleep 1 
-	    ((count++)) 
+	    count=$((count + 1)) 
 	done
 	packages="com.google.android.youtube com.google.android.apps.youtube.music"
 	hide_app () {
