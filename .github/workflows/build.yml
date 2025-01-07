@@ -35,12 +35,11 @@ jobs:
         run: |
           cp -r ../dist-temp/* webroot/
 
-      - name: Compress v1.5.2+ branch as .zip file
-        run: |
-          zip -r release.zip *
-
       - name: Upload release artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-v1.5.2+
-          path: release.zip
+          path: ${{ github.workspace }}
+          exclude: |
+            **/.git/**
+            **/.github/**
