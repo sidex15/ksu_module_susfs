@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Checkout webui branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: webui
 
@@ -23,7 +23,7 @@ jobs:
           cp -r dist/ ../dist-temp/
 
       - name: Checkout 1.5.2+ branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: 1.5.2+
 
@@ -40,7 +40,7 @@ jobs:
           git archive --format zip --output release.zip 1.5.2+
 
       - name: Upload release artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: release-1.5.2+
           path: release.zip
