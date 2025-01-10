@@ -1,6 +1,6 @@
 # A KernelSU module for SUS-FS patched kernel #
 
-This module installs a userspace helper tool called **ksu_susfs** and **sus_su** into /data/adb/ksu and provides a script to communicate with SUS-FS kernel.
+This module installs a userspace helper tool called **ksu_susfs** and **sus_su** into /data/adb/ksu and provides a script to communicate with SUSFS kernel.
 This module provides root hiding for KernelSU on the kernel level.
 
 ## Notes
