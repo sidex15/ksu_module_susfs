@@ -1,11 +1,11 @@
-# A KernelSU module for SUS-FS patched kernel #
+# A KernelSU module for SUSFS patched kernel #
 
 This module installs a userspace helper tool called **ksu_susfs** and **sus_su** into /data/adb/ksu and provides a script to communicate with SUSFS kernel.
 This module provides root hiding for KernelSU on the kernel level.
 
 ## Notes
-- Make sure you have a custom kernel with SUS-FS patched in it. Check the custom kernel source to see if it has SUS-FS.
-- Make sure the kernel is using SUS-FS 1.5.2 or later for effective hide.
+- Make sure you have a custom kernel with SUSFS patched in it. Check the custom kernel source to see if it has SUSFS.
+- Make sure the kernel is using SUSFS 1.5.2 or later for effective hide.
 - Shamiko v1.2.1 or later is acceptable
 - HideMyApplist is acceptable
 - ReVanced root module compatible
