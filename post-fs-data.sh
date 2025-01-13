@@ -1,5 +1,4 @@
 #!/bin/sh
-PATH=/data/adb/ksu/bin:$PATH
 MODDIR=/data/adb/modules/susfs4ksu
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 . ${MODDIR}/utils.sh
@@ -84,39 +83,3 @@ enable_sus_su_mode_1(){
 	${SUSFS_BIN} add_try_umount /apex/com.android.art/bin/dex2oat64 1
 }
 
-# if global_whiteouts.txt has contents and toggle is enabled
-# echo "global_whiteouts=1" >> /data/adb/susfs4ksu/config.sh
-# then we do the whiteout routine
-if [ $(grep -vc "#" $PERSISTENT_DIR/global_whiteouts.txt) -ge 1 ] && [ $global_whiteouts = 1 ]; then
-	[ -w /mnt ] && basefolder=/mnt
-	[ -w /mnt/vendor ] && basefolder=/mnt/vendor
-	
-	# global mount
-	global_mount() {
-		mkdir $basefolder/whiteouts
-		${SUSFS_BIN} add_sus_path $basefolder/whiteouts
-		cd $tmpfolder/overlay
-		for i in $(ls -d */*); do
-			mkdir -p $basefolder/whiteouts/$i
-			mount --bind $tmpfolder/overlay/$i $basefolder/whiteouts/$i
-			mount -t overlay -o "lowerdir=$basefolder/whiteouts/$i:/$i" overlay /$i
-			${SUSFS_BIN} add_sus_mount /$i
-		done
-	}
-
-	# whiteout_create
-	whiteout_create() {
-		mkdir -p "$tmpfolder/overlay/${1%/*}"
-	  	busybox mknod "$tmpfolder/overlay/$1" c 0 0
-	  	busybox setfattr -n trusted.overlay.whiteout -v y "$tmpfolder/overlay/$1"
-	  	chmod 644 "$tmpfolder/overlay/$1"
-	}
-	
-	# create whiteouts on a loop
-	for file in $(sed '/#/d' $PERSISTENT_DIR/global_whiteouts.txt); do
-		whiteout_create "$file" > /dev/null 2>&1
-	done
-	global_mount
-fi
-
-# EOF
