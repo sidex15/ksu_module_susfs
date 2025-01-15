@@ -65,7 +65,9 @@ fi
 [ $spoof_cmdline = 1 ] && {
 	echo "susfs4ksu/boot-completed: [spoof_cmdline]" >> $logfile1
 	sed 's|androidboot.verifiedbootstate=orange|androidboot.verifiedbootstate=green|g' /proc/cmdline > /debug_ramdisk/susfs4ksu/cmdline
-	${SUSFS_BIN} set_proc_cmdline /debug_ramdisk/susfs4ksu/cmdline
+	if ! ${SUSFS_BIN} set_proc_cmdline /debug_ramdisk/susfs4ksu/cmdline; then
+		${SUSFS_BIN} set_cmdline_or_bootconfig /debug_ramdisk/susfs4ksu/cmdline
+	fi
 }
 
 # echo "hide_revanced=1" >> /data/adb/susfs4ksu/config.sh
