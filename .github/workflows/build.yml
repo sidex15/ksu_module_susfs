@@ -2,9 +2,7 @@ name: Build and Release
 
 on:
   push:
-    branches:
-      - v1.5.2+
-      - webui
+  pull_request:
   workflow_dispatch:
 
 jobs:
