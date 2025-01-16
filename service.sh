@@ -4,6 +4,7 @@ SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 . ${MODDIR}/utils.sh
 PERSISTENT_DIR=/data/adb/susfs4ksu
 tmpfolder=/data/adb/ksu/susfs4ksu
+mntfolder=/debug_ramdisk/susfs4ksu
 logfile1="$tmpfolder/logs/susfs1.log"
 logfile="$tmpfolder/logs/susfs.log"
 
@@ -92,10 +93,10 @@ fi
 	echo "susfs4ksu/service: [hide_vendor_sepolicy]" >> $logfile1
 	sepolicy_cil=/vendor/etc/selinux/vendor_sepolicy.cil
 	grep -q lineage $sepolicy_cil && {
-		grep -v "lineage" $sepolicy_cil > $tmpfolder/vendor_sepolicy.cil
+		grep -v "lineage" $sepolicy_cil > $mntfolder/vendor_sepolicy.cil
 		${SUSFS_BIN} add_sus_kstat $sepolicy_cil && echo "[update_sus_kstat]: susfs4ksu/service $i" >> $logfile1
-		susfs_clone_perm $tmpfolder/vendor_sepolicy.cil $sepolicy_cil
-		mount --bind $tmpfolder/vendor_sepolicy.cil $sepolicy_cil
+		susfs_clone_perm $mntfolder/vendor_sepolicy.cil $sepolicy_cil
+		mount --bind $mntfolder/vendor_sepolicy.cil $sepolicy_cil
 		${SUSFS_BIN} update_sus_kstat $sepolicy_cil && echo "[update_sus_kstat]: susfs4ksu/service $i" >> $logfile1
 		${SUSFS_BIN} add_sus_mount $sepolicy_cil && echo "[sus_mount]: susfs4ksu/service $i" >> $logfile1
 	}
@@ -106,10 +107,10 @@ fi
 	echo "susfs4ksu/service: [hide_compat_matrix] - compatibility_matrix.device.xml" >> $logfile1
 	compatibility_matrix=/system/etc/vintf/compatibility_matrix.device.xml
 	grep -q lineage $compatibility_matrix && {
-		grep -v "lineage" $compatibility_matrix > $tmpfolder/compatibility_matrix.device.xml
+		grep -v "lineage" $compatibility_matrix > $mntfolder/compatibility_matrix.device.xml
 		${SUSFS_BIN} add_sus_kstat $compatibility_matrix && echo "[update_sus_kstat]: susfs4ksu/service $i" >> $logfile1
-		susfs_clone_perm $tmpfolder/compatibility_matrix.device.xml $compatibility_matrix
-		mount --bind $tmpfolder/compatibility_matrix.device.xml $compatibility_matrix
+		susfs_clone_perm $mntfolder/compatibility_matrix.device.xml $compatibility_matrix
+		mount --bind $mntfolder/compatibility_matrix.device.xml $compatibility_matrix
 		${SUSFS_BIN} update_sus_kstat $compatibility_matrix && echo "[update_sus_kstat]: susfs4ksu/service $i" >> $logfile1
 		${SUSFS_BIN} add_sus_mount $compatibility_matrix && echo "[sus_mount]: susfs4ksu/service $i" >> $logfile1
 	}

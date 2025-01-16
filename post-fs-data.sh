@@ -4,8 +4,10 @@ SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 . ${MODDIR}/utils.sh
 PERSISTENT_DIR=/data/adb/susfs4ksu
 tmpfolder=/data/adb/ksu/susfs4ksu
+mntfolder=/debug_ramdisk/susfs4ksu
 mkdir -p $tmpfolder/logs
 mkdir -p $tmpfolder
+mkdir -p $mntfolder
 logfile="$tmpfolder/logs/susfs.log"
 logfile1="$tmpfolder/logs/susfs1.log"
 kernel_ver=$(head -n 1 "$PERSISTENT_DIR/kernelversion.txt")
