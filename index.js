@@ -5,7 +5,7 @@ import Fade from './fade.js';
 import './space.js';
 
 //module location
-const tmpfolder="/debug_ramdisk/susfs4ksu"
+const tmpfolder="/data/adb/ksu/susfs4ksu"
 const moddir="/data/adb/modules/susfs4ksu"
 const config="/data/adb/susfs4ksu"
 const susfs_bin="/data/adb/ksu/bin/ksu_susfs"
