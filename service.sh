@@ -11,6 +11,7 @@ logfile="$tmpfolder/logs/susfs.log"
 hide_loops=1
 hide_vendor_sepolicy=0
 hide_compat_matrix=0
+fake_service_list=0
 susfs_log=1
 sus_su=2
 [ -f $PERSISTENT_DIR/config.sh ] && . $PERSISTENT_DIR/config.sh
@@ -114,6 +115,21 @@ fi
 		${SUSFS_BIN} update_sus_kstat $compatibility_matrix && echo "[update_sus_kstat]: susfs4ksu/service $i" >> $logfile1
 		${SUSFS_BIN} add_sus_mount $compatibility_matrix && echo "[sus_mount]: susfs4ksu/service $i" >> $logfile1
 	}
+}
+
+# echo "fake_service_list=1" >> /data/adb/susfs4ksu/config.sh
+[ $fake_service_list = 1 ] && {
+	# feed fake service list
+	# this is bs but what can we do
+	mkdir -p "$mntfolder/system_bin"
+	echo "#!/bin/sh" > "$mntfolder/system_bin/service"
+	echo "FAKELIST=\"$(/system/bin/service list | sed 's/lineage//g; s/Lineage//g' | base64 -w 0)"\" >> "$mntfolder/system_bin/service"
+	echo "echo \$FAKELIST | base64 -d" >> "$mntfolder/system_bin/service"
+	susfs_clone_perm "$mntfolder/system_bin/service" /system/bin/service
+	${SUSFS_BIN} add_sus_kstat /system/bin/service
+	mount --bind "$mntfolder/system_bin/service" /system/bin/service
+	${SUSFS_BIN} update_sus_kstat /system/bin/service
+	${SUSFS_BIN} add_sus_mount /system/bin/service
 }
 
 sleep 15;
