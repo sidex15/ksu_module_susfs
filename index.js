@@ -45,6 +45,7 @@ document.getElementById("kernel_version").innerHTML= await run(`uname -a | cut -
 //toggles
 var is_sus_su_exists = settings.sus_su//await run(`[[ -f "${moddir}/sus_su_enabled" || -f "${moddir}/sus_su_mode" ]] && echo true || echo false`);
 const sus_su_152 = document.getElementById("sus_su_152");
+const sus_su_154 = document.getElementById("sus_su_154");
 const sus_su_142 = document.getElementById("sus_su_142");
 const sus_su_1 = document.getElementById("sus_su_1");
 const sus_su_NOS = document.getElementById("sus_su_NOS");
@@ -73,6 +74,12 @@ else{
 	}
 }
 
+//v1.5.4 auto hide settings
+if(susfs_version.includes("1.5.4")){
+	sus_su_154.classList.remove("hidden")
+	auto_hide_settings();
+}
+
 //highway transition
 const H = new Highway.Core({
 	transitions: {
@@ -90,6 +97,7 @@ H.on('NAVIGATE_END', async ({ to, from, trigger, location }) => {
         keyboard_pop();
 		set_uname(settings);
 		susfs_log_toggle(settings);
+		if (susfs_version.includes("1.5.4")) auto_hide_settings();
 		if(susfs_version.includes("1.5")) sus_su_toggle2(settings);
 		else if(susfs_version.includes("1.4.2")) sus_su_toggle(settings);
     } else if (currentPath === '/custom.html') {
@@ -214,6 +222,87 @@ async function sus_su_toggle2(settings) {
 			//enable_sus_su.checked="checked";
 		}
 	});
+}
+
+async function auto_hide_settings() {
+	const auto_mount = document.getElementById("auto_mount");
+	const auto_bind = document.getElementById("auto_bind");
+	const auto_umount_bind = document.getElementById("auto_umount_bind");
+	const try_umount_zygote = document.getElementById("try_umount_zygote");
+	var is_auto_mount = await run(`[ -f data/adb/susfs_no_auto_add_sus_ksu_default_mount ] && echo true || echo false`);
+	var is_auto_bind = await run(`[ -f data/adb/susfs_no_auto_add_sus_bind_mount ] && echo true || echo false`);
+	var is_auto_umount_bind = await run(`[ -f data/adb/susfs_no_auto_add_try_umount_for_bind_mount ] && echo true || echo false`);
+	var is_try_umount_zygote = await run(`[ -f data/adb/susfs_umount_for_zygote_system_process ] && echo true || echo false`);
+
+	if(is_auto_mount=="true"){
+		auto_mount.checked=false;
+	}
+	if(is_auto_bind=="true"){
+		auto_bind.checked=false;
+	}
+	if(is_auto_umount_bind=="true"){
+		auto_umount_bind.checked=false;
+	}
+	if(is_try_umount_zygote=="false"){
+		try_umount_zygote.checked=false;
+	}
+
+	auto_mount.addEventListener("click",async function(){
+
+		if (is_auto_mount=="true"){
+			await run(`rm -f data/adb/susfs_no_auto_add_sus_ksu_default_mount`);
+			is_auto_mount=="false";
+			toast("Reboot to take effect");
+		}
+		else{
+			await run(`touch data/adb/susfs_no_auto_add_sus_ksu_default_mount`);
+			is_auto_mount=="true"
+			toast("Reboot to take effect");
+		}
+	});
+
+	auto_bind.addEventListener("click",async function(){
+
+		if (is_auto_bind=="true"){
+			await run(`rm -f data/adb/susfs_no_auto_add_sus_bind_mount`);
+			is_auto_bind=="false";
+			toast("Reboot to take effect");
+		}
+		else{
+			await run(`touch data/adb/susfs_no_auto_add_sus_bind_mount`);
+			is_auto_bind=="true";
+			toast("Reboot to take effect");
+		}
+	});
+
+	auto_umount_bind.addEventListener("click",async function(){
+
+		if (is_auto_umount_bind=="true"){
+			await run(`rm -f data/adb/susfs_no_auto_add_try_umount_for_bind_mount`);
+			is_auto_umount_bind=="false";
+			toast("Reboot to take effect");
+		}
+		else{
+			await run(`touch data/adb/susfs_no_auto_add_try_umount_for_bind_mount`);
+			is_auto_umount_bind=="true";
+			toast("Reboot to take effect");
+		}
+	});
+
+	try_umount_zygote.addEventListener("click",async function(){
+
+		if (is_try_umount_zygote=="true"){
+			await run(`rm -f data/adb/susfs_umount_for_zygote_system_process`);
+			is_try_umount_zygote=="false";
+			toast("Reboot to take effect");
+		}
+		else{
+			await run(`touch data/adb/susfs_umount_for_zygote_system_process`);
+			is_try_umount_zygote=="true";
+			toast("Reboot to take effect");
+		}
+	});
+
 }
 
 //sus_su for 1.5.2
