@@ -16,9 +16,9 @@ const susfs_version_tag = document.getElementById("susfs_version");
 susfs_version_tag.innerHTML=susfs_version
 
 //susfs stats and kernel version
-var is_log_empty=await run (`[ -s ${moddir}/susfslogs.txt ] && echo false || echo true`);
+var is_log_empty=await run (`[ -s ${tmpfolder}/logs/susfs.log ] && echo false || echo true`);
 var susfs_stats = catToObject(await run(`cat ${tmpfolder}/susfs_stats.txt`));
-if (is_log_empty=="true" || (susfs_stats.sus_path==0 && susfs_stats.sus_mount==0 && susfs_stats.try_umount==0)){
+if (is_log_empty=="true"){
 	susfs_stats = catToObject(await run(`cat ${tmpfolder}/susfs_stats1.txt`));
 	toast("susfs_stats.txt is empty/missing. Showed Stats from module script");
 }
