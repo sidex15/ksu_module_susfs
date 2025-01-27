@@ -17,27 +17,33 @@ ver=$(uname -r | cut -d. -f1)
 if [ ${ver} -lt 5 ]; then
     KERNEL_VERSION=non-gki
 	ui_print "Non-GKI kernel detected... use non-GKI susfs bins..."
-	chmod +x "${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm64"
+	chmod +x "${TMPDIR}/susfs/tools/153/${KERNEL_VERSION}/ksu_susfs_arm64"
 	if [ ${ARCH} = "arm64" ]; then
-		SUSFS_VERSION=$(${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm64 show version | cut -d. -f3)
+		SUSFS_VERSION_RAW="$(${TMPDIR}/susfs/tools/153/${KERNEL_VERSION}/ksu_susfs_arm64 show version)"
+		# Example output = 'v1.5.3'
+		SUSFS_DECIMAL=$(echo "$SUSFS_VERSION_RAW" | sed 's/^v//; s/\.//g')
+		# SUSFS_DECIMAL = '153'
 	fi
 else
 	KERNEL_VERSION=gki
 	ui_print "GKI kernel detected... use GKI susfs bins..."
-	chmod +x "${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm64"
+	chmod +x "${TMPDIR}/susfs/tools/153/${KERNEL_VERSION}/ksu_susfs_arm64"
 	if [ ${ARCH} = "arm64" ]; then
-		SUSFS_VERSION=$(${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm64 show version | cut -d. -f3)
+		SUSFS_VERSION_RAW="$(${TMPDIR}/susfs/tools/153/${KERNEL_VERSION}/ksu_susfs_arm64 show version)"
+		# Example output = 'v1.5.3'
+		SUSFS_DECIMAL=$(echo "$SUSFS_VERSION_RAW" | sed 's/^v//; s/\.//g')
+		# SUSFS_DECIMAL = '153'
 	fi
 fi
 
 
 if [ ${ARCH} = "arm64" ]; then
-		if [ -n "$SUSFS_VERSION" ] && [ "$SUSFS_VERSION" -gt 2 ] 2>/dev/null; then
-			ui_print "Kernel is using susfs 1.5.3"
-			cp ${TMPDIR}/susfs/tools/1.5.3/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
+		if [ -n "$SUSFS_VERSION_RAW" ] && [ "$SUSFS_DECIMAL" -gt 152 ] 2>/dev/null; then
+			ui_print "Kernel is using susfs $SUSFS_VERSION_RAW"
+			cp ${TMPDIR}/susfs/tools/$SUSFS_DECIMAL/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
 		else
-			ui_print "Kernel is using susfs 1.5.2"
-			cp ${TMPDIR}/susfs/tools/1.5.2/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
+			ui_print "Kernel is using susfs v1.5.2"
+			cp ${TMPDIR}/susfs/tools/152/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
 		fi
         cp ${TMPDIR}/susfs/tools/sus_su_arm64 ${DEST_BIN_DIR}/sus_su
 fi
