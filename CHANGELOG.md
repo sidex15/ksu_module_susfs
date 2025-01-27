@@ -1,3 +1,32 @@
+## v1.5.2-v1.5.4 Revision 13
+### WebUI
+* Implement Auto Hide Settings For SUSFS v1.5.4
+  * Auto Hide Default Mounts
+  * Auto Hide Bind Mounts
+  * Auto Try Umount Bind Mounts
+  * Try Umount For Zygote System Process
+* move tmpfolder location to /data/adb/ksu/susfs4ksu
+* Change 'not supported' to 'not available' in sus_su support to ease up confusion
+### Scripts
+* Add fake_service_list for custom rom hiding
+  * Set fake_service_list=1 in config.sh
+  * Not available in WebUI Custom settings yet as it's untested
+* module: add SUSFS v1.5.4 userspace binaries
+* module: make dynamic install more friendly for continuous integration
+* cmdline hw device name spoof (Proof of Concept)
+* scripts/service: fake encryption status
+* Script/boot-completed: replace hard coded path to mntfolder
+* Script/boot-completed: add cmdline compatibility for newer susfs binaries
+* scripts: add mntfolder for functions/features that's using mount and sus_mount
+* move tmpfolder to /data/adb/susfs4ksu 
+* txtfiles: remove redundant /debug_ramdisk
+* txtfiles: remove /data/adb/modules on try_umount list
+* module: drop META-INF
+* scripts/customize: susfs is ksu only
+* scripts: remove bashism
+* scripts/service: prevent grep to wc -l piping
+* module: drop 32-bit arm support
+
 ## v1.5.2-v1.5.3 Revision 12
 ### Highly Recommend to delete `/data/adb/susfs4ksu/config.sh` first before updating to prevent unwanted issues (You only do this once, you don't need to do it again in future versions)
 ### WebUI
