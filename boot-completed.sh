@@ -68,8 +68,12 @@ fi
 	echo "susfs4ksu/boot-completed: [spoof_cmdline]" >> $logfile1
 	sed 's|androidboot.verifiedbootstate=orange|androidboot.verifiedbootstate=green|g' /proc/cmdline > $mntfolder/cmdline
         sed -i "s/androidboot.hwname=[^ ]*/androidboot.hwname=$(getprop ro.product.name)/; s/androidboot.product.hardware.sku=[^ ]*/androidboot.product.hardware.sku=$(getprop ro.product.name)/" $mntfolder/cmdline
-	if ! ${SUSFS_BIN} set_proc_cmdline $mntfolder/cmdline; then
+	
+	#check for susfs version and use the appropriate method
+	if [ -n "$version" ] && [ "$SUSFS_DECIMAL" -gt 153 ] 2>/dev/null; then
 		${SUSFS_BIN} set_cmdline_or_bootconfig $mntfolder/cmdline
+	else
+		${SUSFS_BIN} set_proc_cmdline $mntfolder/cmdline
 	fi
 }
 
