@@ -8,6 +8,7 @@ mntfolder=/debug_ramdisk/susfs4ksu
 logfile="$tmpfolder/logs/susfs.log"
 logfile1="$tmpfolder/logs/susfs1.log"
 version=$(${SUSFS_BIN} show version)
+SUSFS_DECIMAL=$(echo "$version" | sed 's/^v//; s/\.//g')
 suffix=$(grep "^version=" $MODDIR/module.prop | sed 's/.*\(-R[0-9]*\)$/\1/')
 kernel_ver=$(head -n 1 "$PERSISTENT_DIR/kernelversion.txt")
 
@@ -28,7 +29,7 @@ fi
 sed -i "s/^description=.*/$description/g" $MODDIR/module.prop
 
 # Detect susfs version
-if [ -n "$version" ] && [ "$(echo $version | cut -d. -f3)" -gt 2 ] 2>/dev/null; then
+if [ -n "$version" ] && [ "$SUSFS_DECIMAL" -gt 152 ] 2>/dev/null; then
     # Replace only version number, keep suffix
     sed -i "s/^version=v[0-9.]*\(-R[0-9]*\)$/version=$version$suffix/" $MODDIR/module.prop
 fi
