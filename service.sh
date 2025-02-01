@@ -18,13 +18,21 @@ sus_su=2
 
 # SUS_SU 2#
 sus_su_2(){
+
+	# this is for newer checks if sus_su is already set to 2
+	if ${SUSFS_BIN} sus_su 2 2>/dev/null | grep -q "sus_su is already in mode 2"; then
+        sed -i "s/^sus_su=.*/sus_su=2/" ${PERSISTENT_DIR}/config.sh
+		sed -i "s/^sus_su_active=.*/sus_active=2/" ${PERSISTENT_DIR}/config.sh
+        return
+    fi
+
 	# Enable sus_su or abort the function if sus_su is not supported #
 	if ! ${SUSFS_BIN} sus_su 2; then
 		sed -i "s/^sus_su=.*/sus_su=-1/" ${PERSISTENT_DIR}/config.sh
 		return
 	fi
 	sed -i "s/^sus_su=.*/sus_su=2/" ${PERSISTENT_DIR}/config.sh
-	sed -i "s/^sus_su_acitve=.*/sus_active=2/" ${PERSISTENT_DIR}/config.sh
+	sed -i "s/^sus_su_active=.*/sus_active=2/" ${PERSISTENT_DIR}/config.sh
 	return
 }
 
