@@ -1,3 +1,18 @@
+## v1.5.2-v1.5.4 Revision 14
+### This fix is for GKI/SUS_SU Enabled SUSFS Users that mistakenly showed `SUSFS Is not available in your kernel` in WebUI <br> For GKI/SUS_SU Enabled Users please change to `sus_su=2` in /data/adb/susfs4ksu/config.sh then reboot to see if it persists
+
+### WebUI
+* fix susfs logs location and remove susfs_stats is zero condition
+### Scripts
+* scripts/service: Rework sus_su checks
+  * For SUSFS v1.5.3+ it will use the `show enabled_features` feature to check if sus_su is supported or not
+  * For SUSFS v1.5.2 will use the traditional check if sus_su throws an error or not
+  * Add Check if sus_su is in mode 0
+* scripts/boot-completed: use susfs version to check different set cmdline command
+
+### Note
+If you want to get newer updates or nightly updates, check the actions tab of [susfs4ksu module Here](https://github.com/sidex15/susfs4ksu-module/actions)
+
 ## v1.5.2-v1.5.4 Revision 13
 ### WebUI
 * Implement Auto Hide Settings For SUSFS v1.5.4
