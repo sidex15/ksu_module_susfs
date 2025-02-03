@@ -26,7 +26,7 @@ sus_su_2(){
 		return
 	fi
 	sed -i "s/^sus_su=.*/sus_su=2/" ${PERSISTENT_DIR}/config.sh
-	sed -i "s/^sus_su_active=.*/sus_active=2/" ${PERSISTENT_DIR}/config.sh
+	sed -i "s/^sus_su_active=.*/sus_su_active=2/" ${PERSISTENT_DIR}/config.sh
 	return
 }
 
@@ -38,7 +38,7 @@ sus_su_2(){
 		if ${SUSFS_BIN} show enabled_features 2>/dev/null | grep -q "CONFIG_KSU_SUSFS_SUS_SU"; then
 			${SUSFS_BIN} sus_su 2
 			sed -i "s/^sus_su=.*/sus_su=2/" ${PERSISTENT_DIR}/config.sh
-			sed -i "s/^sus_su_active=.*/sus_active=2/" ${PERSISTENT_DIR}/config.sh
+			sed -i "s/^sus_su_active=.*/sus_su_active=2/" ${PERSISTENT_DIR}/config.sh
 		else
 			sed -i "s/^sus_su=.*/sus_su=-1/" ${PERSISTENT_DIR}/config.sh
 		fi
@@ -55,13 +55,13 @@ sus_su_2(){
 			sed -i "s/^sus_su=.*/sus_su=-1/" ${PERSISTENT_DIR}/config.sh
 		else
 			${SUSFS_BIN} sus_su 0
-			sed -i "s/^sus_su_active=.*/sus_active=0/" ${PERSISTENT_DIR}/config.sh
+			sed -i "s/^sus_su_active=.*/sus_su_active=0/" ${PERSISTENT_DIR}/config.sh
 		fi
 	else
 		if ! ${SUSFS_BIN} sus_su 0; then
 			sed -i "s/^sus_su=.*/sus_su=-1/" ${PERSISTENT_DIR}/config.sh
 		else
-			sed -i "s/^sus_su_active=.*/sus_active=0/" ${PERSISTENT_DIR}/config.sh
+			sed -i "s/^sus_su_active=.*/sus_su_active=0/" ${PERSISTENT_DIR}/config.sh
 		fi
 	fi
 }
@@ -72,12 +72,12 @@ sus_su_2(){
 		if ${SUSFS_BIN} show enabled_features 2>/dev/null | grep -q "CONFIG_KSU_SUSFS_SUS_SU"; then
   			sed -i "s/^sus_su=.*/sus_su=0/" ${PERSISTENT_DIR}/config.sh
 			${SUSFS_BIN} sus_su 0
-			sed -i "s/^sus_su_active=.*/sus_active=0/" ${PERSISTENT_DIR}/config.sh
+			sed -i "s/^sus_su_active=.*/sus_su_active=0/" ${PERSISTENT_DIR}/config.sh
 		fi
 	else
 		if ${SUSFS_BIN} sus_su 0; then
   			sed -i "s/^sus_su=.*/sus_su=0/" ${PERSISTENT_DIR}/config.sh
-			sed -i "s/^sus_su_active=.*/sus_active=0/" ${PERSISTENT_DIR}/config.sh
+			sed -i "s/^sus_su_active=.*/sus_su_active=0/" ${PERSISTENT_DIR}/config.sh
 		fi
 	fi
 }
