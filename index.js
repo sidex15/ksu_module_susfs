@@ -12,6 +12,7 @@ const susfs_bin="/data/adb/ksu/bin/ksu_susfs"
 const settings = catToObject(await run(`cat ${config}/config.sh`));
 //susfs_version
 var susfs_version = await run(`grep version= ${moddir}/module.prop | cut -d '=' -f 2`);
+var susfs_version_decimal=parseFloat(susfs_version.replace(/[v.]/g,""));
 const susfs_version_tag = document.getElementById("susfs_version");
 susfs_version_tag.innerHTML=susfs_version
 
@@ -58,7 +59,7 @@ if (is_sus_su_exists==-1){
 	sus_su_NOS.classList.remove("hidden")
 }
 else{
-	if(susfs_version.includes("1.5")){
+	if(susfs_version_decimal>=150){
 		if(is_sus_su_exists==1){
 			sus_su_1.classList.remove("hidden")
 		}
@@ -68,14 +69,14 @@ else{
 		}
 		//sus_su_radio()
 	}
-	else if(susfs_version.includes("1.4.2")){
+	else if(susfs_version_decimal<=142){
 		sus_su_142.classList.remove("hidden")
 		sus_su_toggle(settings);
 	}
 }
 
-//v1.5.4 auto hide settings
-if(susfs_version.includes("1.5.4")){
+//v1.5.4+ auto hide settings
+if(susfs_version_decimal>=154){
 	sus_su_154.classList.remove("hidden")
 	auto_hide_settings();
 }
@@ -97,9 +98,9 @@ H.on('NAVIGATE_END', async ({ to, from, trigger, location }) => {
         keyboard_pop();
 		set_uname(settings);
 		susfs_log_toggle(settings);
-		if (susfs_version.includes("1.5.4")) auto_hide_settings();
-		if(susfs_version.includes("1.5")) sus_su_toggle2(settings);
-		else if(susfs_version.includes("1.4.2")) sus_su_toggle(settings);
+		if (susfs_version_decimal>=154) auto_hide_settings();
+		if(susfs_version_decimal>=150) sus_su_toggle2(settings);
+		else if(susfs_version_decimal<=142) sus_su_toggle(settings);
     } else if (currentPath === '/custom.html') {
 		//console.log("in custom");
 		custom_toggles(settings);
