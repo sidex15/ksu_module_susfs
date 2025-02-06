@@ -16,20 +16,20 @@ unzip -qq ${ZIPFILE} -d ${TMPDIR}/susfs
 ver=$(uname -r | cut -d. -f1)
 if [ ${ver} -lt 5 ]; then
     KERNEL_VERSION=non-gki
-	ui_print "Non-GKI kernel detected... use non-GKI susfs bins..."
-	chmod +x "${TMPDIR}/susfs/tools/153/${KERNEL_VERSION}/ksu_susfs_arm64"
+	ui_print "[-] Non-GKI kernel detected... use non-GKI susfs bins..."
+	chmod +x "${TMPDIR}/susfs/tools/latest/${KERNEL_VERSION}/ksu_susfs_arm64"
 	if [ ${ARCH} = "arm64" ]; then
-		SUSFS_VERSION_RAW="$(${TMPDIR}/susfs/tools/153/${KERNEL_VERSION}/ksu_susfs_arm64 show version)"
+		SUSFS_VERSION_RAW="$(${TMPDIR}/susfs/tools/latest/${KERNEL_VERSION}/ksu_susfs_arm64 show version)"
 		# Example output = 'v1.5.3'
 		SUSFS_DECIMAL=$(echo "$SUSFS_VERSION_RAW" | sed 's/^v//; s/\.//g')
 		# SUSFS_DECIMAL = '153'
 	fi
 else
 	KERNEL_VERSION=gki
-	ui_print "GKI kernel detected... use GKI susfs bins..."
-	chmod +x "${TMPDIR}/susfs/tools/153/${KERNEL_VERSION}/ksu_susfs_arm64"
+	ui_print "[-] GKI kernel detected... use GKI susfs bins..."
+	chmod +x "${TMPDIR}/susfs/tools/latest/${KERNEL_VERSION}/ksu_susfs_arm64"
 	if [ ${ARCH} = "arm64" ]; then
-		SUSFS_VERSION_RAW="$(${TMPDIR}/susfs/tools/153/${KERNEL_VERSION}/ksu_susfs_arm64 show version)"
+		SUSFS_VERSION_RAW="$(${TMPDIR}/susfs/tools/latest/${KERNEL_VERSION}/ksu_susfs_arm64 show version)"
 		# Example output = 'v1.5.3'
 		SUSFS_DECIMAL=$(echo "$SUSFS_VERSION_RAW" | sed 's/^v//; s/\.//g')
 		# SUSFS_DECIMAL = '153'
@@ -39,10 +39,15 @@ fi
 
 if [ ${ARCH} = "arm64" ]; then
 		if [ -n "$SUSFS_VERSION_RAW" ] && [ "$SUSFS_DECIMAL" -gt 152 ] 2>/dev/null; then
-			ui_print "Kernel is using susfs $SUSFS_VERSION_RAW"
-			cp ${TMPDIR}/susfs/tools/$SUSFS_DECIMAL/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
+			ui_print "[-] Kernel is using susfs $SUSFS_VERSION_RAW"
+			ui_print "[-] Downloading susfs $SUSFS_VERSION_RAW from the internet"
+			if ! curl -o ${DEST_BIN_DIR}/ksu_susfs -f "https://raw.githubusercontent.com/sidex15/susfs4ksu-binaries/main/$SUSFS_DECIMAL/$KERNEL_VERSION/ksu_susfs_arm64" 2>/dev/null; then
+				ui_print "[!] No internet connection or susfs binaries not found"
+				ui_print "[-] Using local susfs binaries"
+				cp ${TMPDIR}/susfs/tools/latest/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
+			fi
 		else
-			ui_print "Kernel is using susfs v1.5.2"
+			ui_print "[-] Kernel is using susfs v1.5.2"
 			cp ${TMPDIR}/susfs/tools/152/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
 		fi
         cp ${TMPDIR}/susfs/tools/sus_su_arm64 ${DEST_BIN_DIR}/sus_su
@@ -55,9 +60,9 @@ prop_value=$(getprop ro.boot.vbmeta.digest)
 HASH_DIR=/data/adb/VerifiedBootHash
 
 if [ -z "$prop_value" ]; then
-    ui_print "Property ro.boot.vbmeta.digest is empty, generate VerifiedBootHash directory"
+    ui_print "[!] Property ro.boot.vbmeta.digest is empty, generate VerifiedBootHash directory"
 	if [ ! -d "$HASH_DIR" ]; then
-	  ui_print "- Creating VerifiedBootHash directory"
+	  ui_print "[-] Creating VerifiedBootHash directory"
 	  mkdir -p "$HASH_DIR"
 	  [ ! -f "$HASH_DIR/VerifiedBootHash.txt" ] && touch "$HASH_DIR/VerifiedBootHash.txt"
 	fi
@@ -72,7 +77,7 @@ else
 	ui_print "*********************************************************"
 fi
 
-ui_print "! Preparing susfs4ksu persistent directory"
+ui_print "[-] Preparing susfs4ksu persistent directory"
 PERSISTENT_DIR=/data/adb/susfs4ksu
 [ ! -d /data/adb/susfs4ksu ] && mkdir -p $PERSISTENT_DIR
 files="sus_mount.txt try_umount.txt sus_path.txt kernelversion.txt config.sh"
