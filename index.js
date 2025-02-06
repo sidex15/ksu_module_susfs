@@ -19,6 +19,7 @@ susfs_version_tag.innerHTML=susfs_version
 //susfs stats and kernel version
 var is_log_empty=await run (`[ -s ${tmpfolder}/logs/susfs.log ] && echo false || echo true`);
 var susfs_stats = catToObject(await run(`cat ${tmpfolder}/susfs_stats.txt`));
+const kernel_variant = await run(`${susfs_bin} show variant`);
 if (is_log_empty=="true"){
 	susfs_stats = catToObject(await run(`cat ${tmpfolder}/susfs_stats1.txt`));
 	toast("susfs_stats.txt is empty/missing. Showed Stats from module script");
@@ -50,13 +51,17 @@ const sus_su_154 = document.getElementById("sus_su_154");
 const sus_su_142 = document.getElementById("sus_su_142");
 const sus_su_1 = document.getElementById("sus_su_1");
 const sus_su_NOS = document.getElementById("sus_su_NOS");
+const sus_su_msg = document.getElementById("sus_su_msg");
 //toast(`is_sus_su_exists: ${is_sus_su_exists}`);
 if (is_sus_su_exists==-1){
 	sus_su.removeAttribute("checked");
 	sus_su.setAttribute("disabled","");
 	enable_sus_su.removeAttribute("checked");
 	enable_sus_su.setAttribute("disabled","");
-	sus_su_NOS.classList.remove("hidden")
+	sus_su_NOS.classList.remove("hidden");
+	if(susfs_version_decimal>=154 && kernel_variant=="NON-GKI"){
+		sus_su_msg.innerHTML="sus su is not supported on NON-GKI kernels"
+	}
 }
 else{
 	if(susfs_version_decimal>=150){
