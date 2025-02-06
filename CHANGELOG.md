@@ -1,3 +1,17 @@
+## v1.5.2+ Revision 15
+### WebUI
+* Check if it's NON-GKI then it will show that SUS_SU is not supported 
+on NON-GKI kernels
+* Convert susfs version into a decimal number for checking susfs features
+### Scripts
+* module: scripts/customize: use internet connection to install/update susfs binaries
+  * If there's no internet connection or the binary of that version is not available yet it installs the latest local binaries in the module
+  * The source of the susfs binaries are in this repo [susfs4ksu binaries](https://github.com/sidex15/susfs4ksu-binaries)
+* scripts/service: check if sus_su is supported when config.sh says it doesn't
+* scripts/service: Rename inconsistent variable sus_active to sus_su_active
+* scripts/service: Add final susfs activity check for sus_su=-1
+* scripts/customize: make unzip quiet ssshhhh
+
 ## v1.5.2-v1.5.4 Revision 14
 ### This fix is for GKI/SUS_SU Enabled SUSFS Users that mistakenly showed `SUSFS Is not available in your kernel` in WebUI
 ### For GKI/SUS_SU Enabled Users please change to `sus_su=2` in /data/adb/susfs4ksu/config.sh then reboot to see if it persists
