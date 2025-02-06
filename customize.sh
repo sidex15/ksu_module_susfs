@@ -11,7 +11,7 @@ if [ ! -d ${DEST_BIN_DIR} ]; then
     exit 1
 fi
 
-unzip ${ZIPFILE} -d ${TMPDIR}/susfs
+unzip -qq ${ZIPFILE} -d ${TMPDIR}/susfs
 
 ver=$(uname -r | cut -d. -f1)
 if [ ${ver} -lt 5 ]; then
