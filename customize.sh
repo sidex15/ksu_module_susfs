@@ -1,4 +1,5 @@
 #!/bin/sh
+PATH=/data/adb/ksu/bin:/data/data/com.termux/files/usr/bin:$PATH
 DEST_BIN_DIR=/data/adb/ksu/bin
 
 if [ -z "$KSU" ] ; then
@@ -12,6 +13,11 @@ if [ ! -d ${DEST_BIN_DIR} ]; then
 fi
 
 unzip -qq ${ZIPFILE} -d ${TMPDIR}/susfs
+
+download() { busybox wget -T 10 --no-check-certificate -qO - "$1"; }
+if command -v curl > /dev/null 2>&1; then
+	download() { curl --connect-timeout 10 -Ls "$1"; }
+fi
 
 ver=$(uname -r | cut -d. -f1)
 if [ ${ver} -lt 5 ]; then
@@ -41,7 +47,7 @@ if [ ${ARCH} = "arm64" ]; then
 		if [ -n "$SUSFS_VERSION_RAW" ] && [ "$SUSFS_DECIMAL" -gt 152 ] 2>/dev/null; then
 			ui_print "[-] Kernel is using susfs $SUSFS_VERSION_RAW"
 			ui_print "[-] Downloading susfs $SUSFS_VERSION_RAW from the internet"
-			if ! curl -o ${DEST_BIN_DIR}/ksu_susfs -f "https://raw.githubusercontent.com/sidex15/susfs4ksu-binaries/main/$SUSFS_DECIMAL/$KERNEL_VERSION/ksu_susfs_arm64" 2>/dev/null; then
+			if ! download "https://raw.githubusercontent.com/sidex15/susfs4ksu-binaries/main/$SUSFS_DECIMAL/$KERNEL_VERSION/ksu_susfs_arm64" > ${DEST_BIN_DIR}/ksu_susfs ; then
 				ui_print "[!] No internet connection or susfs binaries not found"
 				ui_print "[-] Using local susfs binaries"
 				cp ${TMPDIR}/susfs/tools/latest/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
