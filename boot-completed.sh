@@ -21,6 +21,9 @@ spoof_uname=0
 # update description
 if [ -f $tmpfolder/logs/susfs_active ] || dmesg | grep -q "susfs:"; then
 	description="description=status: ✅ SuS ඞ "
+	sus_su=2
+	sed -i "s/^sus_su=.*/sus_su=2/" ${PERSISTENT_DIR}/config.sh
+	sed -i "s/^sus_su_active=.*/sus_su_active=2/" ${PERSISTENT_DIR}/config.sh
 else
 	description="description=status: failed 💢 - Make sure you're on a SuSFS patched kernel! 😭"
 	rm -rf ${MODDIR}/webroot
