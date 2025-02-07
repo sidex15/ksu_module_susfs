@@ -42,23 +42,39 @@ else
 	fi
 fi
 
-
-if [ ${ARCH} = "arm64" ]; then
-		if [ -n "$SUSFS_VERSION_RAW" ] && [ "$SUSFS_DECIMAL" -gt 152 ] 2>/dev/null; then
-			ui_print "[-] Kernel is using susfs $SUSFS_VERSION_RAW"
-			ui_print "[-] Downloading susfs $SUSFS_VERSION_RAW from the internet"
-			if ! download "https://raw.githubusercontent.com/sidex15/susfs4ksu-binaries/main/$SUSFS_DECIMAL/$KERNEL_VERSION/ksu_susfs_arm64" > ${DEST_BIN_DIR}/ksu_susfs ; then
-				ui_print "[!] No internet connection or susfs binaries not found"
-				ui_print "[-] Using local susfs binaries"
-				cp ${TMPDIR}/susfs/tools/latest/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
-			fi
+# dl logic, shorthand
+# download remote
+#    test binary; if fail use whats shipped
+# if dl fail; use whats shipped
+if [ -n "$SUSFS_VERSION_RAW" ] && [ "$SUSFS_DECIMAL" -gt 152 ] 2>/dev/null; then
+	ui_print "[-] Kernel is using susfs $SUSFS_VERSION_RAW"
+	ui_print "[-] Downloading susfs $SUSFS_VERSION_RAW from the internet"
+	if download "https://raw.githubusercontent.com/sidex15/susfs4ksu-binaries/main/$SUSFS_DECIMAL/$KERNEL_VERSION/ksu_susfs_arm64" > ${MODPATH}/ksu_susfs_remote ; then
+		# test downloaded binary
+		chmod +x ${MODPATH}/ksu_susfs_remote
+		if ${MODPATH}/ksu_susfs_remote show enabled_features | grep -q "CONFIG_KSU_SUSFS" > /dev/null 2>&1 ; then
+			# test ok
+			cp -f ${MODPATH}/ksu_susfs_remote ${DEST_BIN_DIR}/ksu_susfs
 		else
-			ui_print "[-] Kernel is using susfs v1.5.2"
-			cp ${TMPDIR}/susfs/tools/152/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
+			# test failed
+			cp ${TMPDIR}/susfs/tools/latest/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
 		fi
-        cp ${TMPDIR}/susfs/tools/sus_su_arm64 ${DEST_BIN_DIR}/sus_su
+	else
+		# failed
+		echo "[!] No internet connection or susfs binaries not found"
+		echo "[-] Using local susfs binaries"
+		cp ${TMPDIR}/susfs/tools/latest/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
+	fi		
+else
+	ui_print "[-] Kernel is using susfs v1.5.2"
+	cp -f ${TMPDIR}/susfs/tools/152/${KERNEL_VERSION}/ksu_susfs_arm64 ${DEST_BIN_DIR}/ksu_susfs
 fi
 
+# cleanup
+rm -f ${MODPATH}/ksu_susfs_remote > /dev/null 2>&1
+
+# copy sus_su over
+cp ${TMPDIR}/susfs/tools/sus_su_arm64 ${DEST_BIN_DIR}/sus_su
 chmod 755 ${DEST_BIN_DIR}/ksu_susfs ${DEST_BIN_DIR}/sus_su
 chmod 644 ${MODPATH}/post-fs-data.sh ${MODPATH}/service.sh ${MODPATH}/uninstall.sh
 
