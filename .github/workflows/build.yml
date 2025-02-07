@@ -36,6 +36,11 @@ jobs:
         run: |
           cp -r ../dist-temp/* webroot/
 
+      - name: Update version with random CI string
+        run: |
+          RANDOM_STRING=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 5)
+          sed -i "s/version=v1.5.2-R.*/version=v1.5.2-CI-${RANDOM_STRING}/" module.prop
+
       - name: Upload release artifact
         uses: actions/upload-artifact@v4
         with:
