@@ -67,24 +67,17 @@ sus_su_2(){
 }
 
 [ $sus_su = -1 ] && {
-	# Final check for susfs activity if sus_su is -1
-	if [ -f $tmpfolder/logs/susfs_active ] || dmesg | grep -q "susfs:"; then
-		sus_su=2
-		sed -i "s/^sus_su=.*/sus_su=2/" ${PERSISTENT_DIR}/config.sh
-		sed -i "s/^sus_su_active=.*/sus_su_active=2/" ${PERSISTENT_DIR}/config.sh
+	if [ -n "$version" ] && [ "$SUSFS_DECIMAL" -gt 152 ] 2>/dev/null; then
+		# Check if sus_su is supported
+		if ${SUSFS_BIN} show enabled_features 2>/dev/null | grep -q "CONFIG_KSU_SUSFS_SUS_SU"; then
+  			sed -i "s/^sus_su=.*/sus_su=0/" ${PERSISTENT_DIR}/config.sh
+			${SUSFS_BIN} sus_su 0
+			sed -i "s/^sus_su_active=.*/sus_su_active=0/" ${PERSISTENT_DIR}/config.sh
+		fi
 	else
-		if [ -n "$version" ] && [ "$SUSFS_DECIMAL" -gt 152 ] 2>/dev/null; then
-			# Check if sus_su is supported
-			if ${SUSFS_BIN} show enabled_features 2>/dev/null | grep -q "CONFIG_KSU_SUSFS_SUS_SU"; then
-				sed -i "s/^sus_su=.*/sus_su=0/" ${PERSISTENT_DIR}/config.sh
-				${SUSFS_BIN} sus_su 0
-				sed -i "s/^sus_su_active=.*/sus_su_active=0/" ${PERSISTENT_DIR}/config.sh
-			fi
-		else
-			if ${SUSFS_BIN} sus_su 0; then
-				sed -i "s/^sus_su=.*/sus_su=0/" ${PERSISTENT_DIR}/config.sh
-				sed -i "s/^sus_su_active=.*/sus_su_active=0/" ${PERSISTENT_DIR}/config.sh
-			fi
+		if ${SUSFS_BIN} sus_su 0; then
+  			sed -i "s/^sus_su=.*/sus_su=0/" ${PERSISTENT_DIR}/config.sh
+			sed -i "s/^sus_su_active=.*/sus_su_active=0/" ${PERSISTENT_DIR}/config.sh
 		fi
 	fi
 }
