@@ -36,9 +36,9 @@ jobs:
         run: |
           cp -r ../dist-temp/* webroot/
 
-      - name: Update version with random CI string
+      - name: Update version with git HEAD
         run: |
-          RANDOM_STRING=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 5)
+          RANDOM_STRING=$(git rev-parse --short HEAD | cut -c1-7)
           echo "BUILD_ID=${RANDOM_STRING}" >> $GITHUB_ENV
           sed -i "s/version=v1.5.2-R.*/version=v1.5.2-CI-${RANDOM_STRING}/" module.prop
 
