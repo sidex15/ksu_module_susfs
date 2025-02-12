@@ -7,7 +7,7 @@ hide_compat_matrix=0
 hide_gapps=0
 hide_revanced=1
 spoof_cmdline=0
-hide_loops=1
 force_hide_lsposed=0
 spoof_uname=0
 fake_service_list=0
+

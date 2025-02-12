@@ -10,7 +10,6 @@ logfile="$tmpfolder/logs/susfs.log"
 version=$(${SUSFS_BIN} show version)
 SUSFS_DECIMAL=$(echo "$version" | sed 's/^v//; s/\.//g')
 
-hide_loops=1
 hide_vendor_sepolicy=0
 hide_compat_matrix=0
 fake_service_list=0
@@ -129,14 +128,18 @@ if [ -s "$HASH_FILE" ]; then
     resetprop -v -n ro.boot.vbmeta.digest "$(cat $HASH_FILE)"
 fi
 
-# echo "hide_loops=1" >> /data/adb/susfs4ksu/config.sh
-[ $hide_loops = 1 ] && {
+# always hide device nodes (loops) if NOT on MKSU
+# https://github.com/5ec1cff/KernelSU/pull/5
+# https://github.com/5ec1cff/KernelSU/commit/92d793d0e0e80ed0e87af9e39879d2b70c37c748
+if [ ! "$KSU_MAGIC_MOUNT" = true ]; then
+	# just read this on the log for the webui
+	# show status instead of a radio button
 	echo "susfs4ksu/service: [hide_loops]" >> $logfile1
 	for device in $(ls -Ld /proc/fs/jbd2/loop*8 | sed 's|/proc/fs/jbd2/||; s|-8||'); do
 		${SUSFS_BIN} add_sus_path /proc/fs/jbd2/${device}-8 && echo "[sus_path]: susfs4ksu/service $i" >> $logfile1
 		${SUSFS_BIN} add_sus_path /proc/fs/ext4/${device} && echo "[sus_path]: susfs4ksu/service $i" >> $logfile1
 	done
-}
+fi
 
 # echo "hide_vendor_sepolicy=1" >> /data/adb/susfs4ksu/config.sh
 [ $hide_vendor_sepolicy = 1 ] && {
