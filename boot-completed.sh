@@ -22,7 +22,6 @@ if [ -f $tmpfolder/logs/susfs_active ] || dmesg | grep -q "susfs:"; then
 	description="description=status: ✅ SuS ඞ "
 else
 	description="description=status: failed 💢 - Make sure you're on a SuSFS patched kernel! 😭"
-	rm -rf ${MODDIR}/webroot
 	touch ${MODDIR}/disable
 fi
 sed -i "s/^description=.*/$description/g" $MODDIR/module.prop
