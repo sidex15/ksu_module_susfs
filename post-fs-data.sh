@@ -68,15 +68,6 @@ enable_sus_su_mode_1(){
 # but this is probably not needed if auto_sus_bind_mount is enabled
 [ $force_hide_lsposed = 1 ] && {
 	echo "susfs4ksu/boot-completed: [force_hide_lsposed]" >> $logfile1
-	${SUSFS_BIN} add_sus_mount /data/adb/modules/zygisk_lsposed/bin/dex2oat
-	${SUSFS_BIN} add_sus_mount /data/adb/modules/zygisk_lsposed/bin/dex2oat32
-	${SUSFS_BIN} add_sus_mount /data/adb/modules/zygisk_lsposed/bin/dex2oat64
-	${SUSFS_BIN} add_sus_mount /system/apex/com.android.art/bin/dex2oat
-	${SUSFS_BIN} add_sus_mount /system/apex/com.android.art/bin/dex2oat32
-	${SUSFS_BIN} add_sus_mount /system/apex/com.android.art/bin/dex2oat64
-	${SUSFS_BIN} add_sus_mount /apex/com.android.art/bin/dex2oat
-	${SUSFS_BIN} add_sus_mount /apex/com.android.art/bin/dex2oat32
-	${SUSFS_BIN} add_sus_mount /apex/com.android.art/bin/dex2oat64
 	${SUSFS_BIN} add_try_umount /system/apex/com.android.art/bin/dex2oat 1
 	${SUSFS_BIN} add_try_umount /system/apex/com.android.art/bin/dex2oat32 1
 	${SUSFS_BIN} add_try_umount /system/apex/com.android.art/bin/dex2oat64 1
