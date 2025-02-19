@@ -122,14 +122,14 @@ async function sus_su_toggle(settings) {
 	const sus_su = document.getElementById("sus_su");
 	const enable_sus_su = document.getElementById("enable_sus_su");
 	//const settings = catToObject(await run(`cat ${config}/config.sh`));
-	var is_enable_sus_su = settings.sus_su //await run(`if grep -q '^enable_sus_su$' ${moddir}/service.sh; then echo true; else echo false; fi;`);
-	var is_sus_su_enable = settings.sus_su_active //await run(`cat ${moddir}/sus_su_enabled`);
-	//toast(`sus_su on boot: ${is_enable_sus_su}`);
-	//toast(`sus_su: ${is_sus_su_enable}`);
-	if(is_enable_sus_su==1 || is_enable_sus_su==2){
-		sus_su.addEventListener("click",function(){
-		if (is_sus_su_enable==1 || is_sus_su_enable==2){
+	var sus_su_check = settings;
+	//toast(`sus_su on boot: ${sus_su_check.sus_su}`);
+	//toast(`sus_su: ${sus_su_check.sus_su_active}`);
+	if(sus_su_check.sus_su==1 || sus_su_check.sus_su==2){
+	sus_su.addEventListener("click",function(){
+		if (sus_su_check.sus_su_active==1 || sus_su_check.sus_su_active==2){
 			console.log("false")
+			sus_su_check.sus_su_active=0
 			run(`${susfs_bin} sus_su 0`)
 			exec(`sed -i 's/sus_su_active=.*/sus_su_active=0/' ${config}/config.sh`)
 			toast("sus su off no need to reboot")
@@ -138,10 +138,12 @@ async function sus_su_toggle(settings) {
 		else{
 			console.log("true")
 			if(susfs_version_decimal>=150){
+				sus_su_check.sus_su_active=2
 				run(`${susfs_bin} sus_su 2`)
 				exec(`sed -i 's/sus_su_active=.*/sus_su_active=2/' ${config}/config.sh`)
 			}
 			else{
+				sus_su_check.sus_su_active=1
 				run(`${susfs_bin} sus_su 1`)
 				exec(`sed -i 's/sus_su_active=.*/sus_su_active=1/' ${config}/config.sh`)
 			}
@@ -155,12 +157,13 @@ async function sus_su_toggle(settings) {
 		enable_sus_su.checked=false;
 		sus_su.setAttribute("disabled","");
 	}
-	if(is_sus_su_enable==0){
+	if(sus_su_check.sus_su_active==0){
 		sus_su.checked=false;
 	}
 	enable_sus_su.addEventListener("click",async function(){
-		if ((is_enable_sus_su==1 || is_enable_sus_su==2) && enable_sus_su.checked=="checked"){
+		if ((sus_su_check.sus_su==1 || sus_su_check.sus_su==2) && enable_sus_su.checked=="checked"){
 			console.log("false")
+			sus_su_check.sus_su=0
 			toast("Reboot to take effect");
 			run(`sed -i 's/sus_su=.*/sus_su=0/' ${config}/config.sh`);
 			exec(`sed -i 's/sus_su_active=.*/sus_su_active=0/' ${config}/config.sh`)
@@ -170,8 +173,14 @@ async function sus_su_toggle(settings) {
 		else{
 			console.log("true")
 			toast("Reboot to take effect");
-			if(susfs_version_decimal>=150) run(`sed -i 's/sus_su=.*/sus_su=2/' ${config}/config.sh`);
-			else run(`sed -i 's/sus_su=.*/sus_su=1/' ${config}/config.sh`);
+			if(susfs_version_decimal>=150){
+				sus_su_check.sus_su=2
+				run(`sed -i 's/sus_su=.*/sus_su=2/' ${config}/config.sh`);
+			}
+			else {
+				sus_su_check.sus_su=1
+				run(`sed -i 's/sus_su=.*/sus_su=1/' ${config}/config.sh`);
+			}
 			enable_sus_su.checked="checked";
 			sus_su.removeAttribute("disabled","");
 		}
